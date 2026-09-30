@@ -9,6 +9,8 @@ A website to sell online and offline classes across multiple subjects. Students 
 - Course catalog with subject, format (online / offline / hybrid) and text filters
 - Enrollment and checkout, with seat limits and duplicate-enrollment protection
 - "My courses" page
+- Dark mode, loading and error states, printable receipts, and an accessibility-checked UI
+- Password reset and class batches: frontend done on sample data, backend coming (see `Agent.md`)
 - Django admin for subjects, courses, students and enrollments
 - Instructors, lessons and schedule, a contact form and change-password
 - Payments: **mock by default**. Razorpay is wired in (`backend/enrollments/payments.py`, webhook at `/api/payments/razorpay/webhook/`) and switches on with `PAYMENT_GATEWAY=razorpay` plus your keys in `backend/.env`. See `Agent.md` for the go-live checklist.

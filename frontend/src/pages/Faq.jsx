@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTitle } from "../lib/hooks.js";
 import PageHeader from "../components/PageHeader.jsx";
 
 const FAQS = [
@@ -12,10 +13,11 @@ const FAQS = [
 ];
 
 export default function Faq() {
+  useTitle("FAQ");
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Frequently asked questions" />
-      <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-surface">
         {FAQS.map(([q, a]) => (
           <details key={q} className="group px-6 py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">
@@ -27,7 +29,7 @@ export default function Faq() {
         ))}
       </div>
       <p className="mt-6 text-center text-sm text-slate-600">
-        Still have a question? <Link to="/contact" className="font-medium text-brand-600">Contact us</Link>
+        Still have a question? <Link to="/contact" className="font-medium text-brand">Contact us</Link>
       </p>
     </div>
   );

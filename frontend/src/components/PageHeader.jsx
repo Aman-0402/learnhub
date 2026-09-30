@@ -16,5 +16,5 @@ export function Notice({ kind = "error", children }) {
 }
 
 export const Card = ({ className = "", ...p }) => (
-  <div className={`rounded-xl border border-slate-200 bg-white p-6 shadow-sm ${className}`} {...p} />
+  <div className={`rounded-xl border border-slate-200 bg-surface p-6 shadow-sm ${className}`} {...p} />
 );

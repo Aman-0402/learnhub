@@ -56,6 +56,19 @@ Public: `GET /api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<
 Payments: `GET /api/payments/config/` (active gateway), `POST /api/payments/razorpay/webhook/` (called by Razorpay)
 Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-courses/`, `GET /api/courses/<slug>/lessons/` (paid students and staff only)
 
+## Frontend feature switches (sample data until the backend exists)
+
+`frontend/src/lib/features.js` holds one switch per feature whose backend is not built yet. While a switch is `false` the page runs on
+built-in sample data (`lib/sample.js`, `lib/services.js`) and shows a visible "sample" note. When the endpoint is live, set it to `true`.
+
+| Switch | Pages | Endpoints the backend must provide |
+|---|---|---|
+| `passwordResetApi` | Forgot password, Reset password | `POST /api/auth/password-reset/` `{email}` (always answer 200, never reveal whether the email exists); `POST /api/auth/password-reset/confirm/` `{uid, token, new_password}` (400 for an expired or used link) |
+| `batchesApi` | Course page batch picker, Checkout, Timetable tab | `GET /api/courses/<slug>/batches/` returning `[{id, label, days:["Mon",...], start_time:"18:00", end_time:"19:30", start_date, format, seats_left}]`; `POST /api/enroll/` must accept `batch`; `GET /api/my-courses/` should return `batch` on each enrollment |
+
+Images need no switch: `CourseThumb` and `Avatar` use `image_url` (course) and `photo_url` (instructor) when the API sends them, and draw a generated placeholder otherwise.
+The receipt page uses the existing `/api/my-courses/` data and needs no new endpoint.
+
 ## Decisions and gotchas
 
 - Payments go through `backend/enrollments/payments.py`. `get_gateway()` returns `MockGateway` (default) or `RazorpayGateway` based on `PAYMENT_GATEWAY`. Views never depend on a specific provider.
@@ -66,6 +79,9 @@ Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-c
 - MySQL cannot create conditional unique constraints, so "one paid enrollment per student and course" is enforced in `PayView` (and tested). Check `models.W036` is silenced for this reason.
 - `mysqlclient` needs system headers, so the project uses the pure-Python `PyMySQL` driver (installed as MySQLdb in `config/settings.py`).
 - Frontend contact details live in `frontend/src/lib/site.js` and are placeholders until the owner fills them in.
+- Dark mode: toggled in the navbar, stored in localStorage (`theme`), applied before first paint by a script in `index.html`. It works by remapping colour variables in `index.css` (`.dark { ... }`), so components use semantic classes: `bg-surface`, `text-brand`, `text-brand-strong`. Do not hard-code `bg-white` or `text-brand-600`.
+- Data pages use `useFetch` (lib/hooks.js) for loading skeletons, error states with "Try again", and 404 handling. Every page calls `useTitle`.
+- Accessibility baseline: skip link, focus ring (base layer), route changes move focus to `<main>`, keyboard-navigable tabs, labelled forms and tables. Verified with axe-core on every page in light and dark (0 violations). Keep it that way.
 - After a deliberate logout, protected pages send the user home (not to login). See `RequireAuth` and `AuthProvider.loggedOut`.
 
 ## Progress log
@@ -76,6 +92,7 @@ Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-c
 | 2026-10-01 | Frontend expanded to 15 pages: About, Contact, Instructors, FAQ, Dashboard, Profile, Payment history, Course space. Responsive navbar, footer, favicon. |
 | 2026-10-01 | Backend expanded: Instructor model (with data migration from the old name field), Lesson model and enrolled-only lessons endpoint, contact endpoint with rate limit, change-password endpoint, double-payment guard. 23 tests pass on MySQL. Frontend wired to all of it; full flow verified in a browser. |
 | 2026-10-01 | Added this Agent.md and a CLAUDE.md that loads it. |
+| 2026-10-01 | Frontend round 2: password reset pages, batch picker and weekly timetable, course and instructor images (generated placeholders), printable receipt, dark mode, loading skeletons and error states, accessibility pass. Password reset and batches run on sample data behind `features.js` switches. axe-core: 0 violations on all pages, light and dark; full flow verified in a browser. |
 | 2026-10-01 | Razorpay structure added (off by default): `RazorpayGateway`, signature verification, webhook endpoint, `gateway_order_id`, `/api/payments/config/`, frontend `lib/razorpay.js` and Checkout hook. 38 backend tests pass; mock and stubbed-Razorpay checkout verified in a browser. Not yet tested with real Razorpay keys. |
 
 ## Status
@@ -95,6 +112,7 @@ Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-c
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
+0. Backend for the two sample-data features (see the switch table above): password reset by email, and batches; then flip the switches
 1. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
 2. Email: welcome email, payment receipt, password reset
 3. Batches and timetable for offline and online classes
@@ -102,7 +120,7 @@ Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-c
 5. Production setup: Gunicorn, environment variables, static files, deployment
 
 **Known gaps**
-- No password reset by email yet
+- Password reset and batches exist only as frontend sample data (backend not built)
 - No refunds or cancellations
 - Razorpay integration is untested against the live API
-- Course thumbnails and instructor photos are not supported yet
+- Real course thumbnails and instructor photos need an upload field on the backend (frontend is ready)

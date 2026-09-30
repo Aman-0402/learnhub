@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTitle } from "../lib/hooks.js";
 import PageHeader, { Card } from "../components/PageHeader.jsx";
 
 const values = [
@@ -13,6 +14,7 @@ const steps = [
 ];
 
 export default function About() {
+  useTitle("About");
   return (
     <div className="space-y-14">
       <PageHeader title="About LearnHub" subtitle="We help students learn the subjects they care about, in the format that suits them." />
@@ -26,7 +28,7 @@ export default function About() {
         <ol className="grid gap-5 md:grid-cols-3">
           {steps.map(([t, d], i) => (
             <li key={t} className="flex gap-4">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-700">{i + 1}</span>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-strong">{i + 1}</span>
               <div><p className="font-semibold">{t}</p><p className="text-sm text-slate-600">{d}</p></div>
             </li>
           ))}

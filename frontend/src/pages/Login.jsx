@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth.jsx";
+import { useTitle } from "../lib/hooks.js";
 import { AuthCard, Field, submitCls } from "../components/AuthForm.jsx";
 
 export default function Login() {
+  useTitle("Log in");
   const { login } = useAuth();
   const nav = useNavigate();
   const from = useLocation().state?.from || "/dashboard";
@@ -21,11 +23,12 @@ export default function Login() {
   return (
     <AuthCard title="Log in" error={error}>
       <form onSubmit={submit} className="space-y-4">
-        <Field label="Email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-        <Field label="Password" type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+        <Field label="Email" type="email" required autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <Field label="Password" type="password" required autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+        <p className="text-right text-sm"><Link className="font-medium text-brand" to="/forgot-password">Forgot password?</Link></p>
         <button className={submitCls} disabled={busy}>{busy ? "Logging in…" : "Log in"}</button>
       </form>
-      <p className="mt-4 text-center text-sm text-slate-600">New here? <Link className="font-medium text-brand-600" to="/register">Create an account</Link></p>
+      <p className="mt-4 text-center text-sm text-slate-600">New here? <Link className="font-medium text-brand" to="/register">Create an account</Link></p>
     </AuthCard>
   );
 }

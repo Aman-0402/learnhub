@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../lib/auth.jsx";
+import { useTitle } from "../lib/hooks.js";
 import PageHeader, { Card, Notice } from "../components/PageHeader.jsx";
 import { Field, submitCls } from "../components/AuthForm.jsx";
 
@@ -31,6 +32,7 @@ function PasswordCard() {
 }
 
 export default function Profile() {
+  useTitle("Profile");
   const { user, setUser } = useAuth();
   const [form, setForm] = useState({ full_name: user.full_name, phone: user.phone || "" });
   const [msg, setMsg] = useState(null);

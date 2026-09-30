@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth.jsx";
+import { useTitle } from "../lib/hooks.js";
 import { AuthCard, Field, submitCls } from "../components/AuthForm.jsx";
 
 export default function Register() {
+  useTitle("Sign up");
   const { register } = useAuth();
   const nav = useNavigate();
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", password: "" });
@@ -27,7 +29,7 @@ export default function Register() {
         <Field label="Password (min 8 characters)" type="password" required minLength={8} {...bind("password")} />
         <button className={submitCls} disabled={busy}>{busy ? "Creating…" : "Sign up"}</button>
       </form>
-      <p className="mt-4 text-center text-sm text-slate-600">Already registered? <Link className="font-medium text-brand-600" to="/login">Log in</Link></p>
+      <p className="mt-4 text-center text-sm text-slate-600">Already registered? <Link className="font-medium text-brand" to="/login">Log in</Link></p>
     </AuthCard>
   );
 }

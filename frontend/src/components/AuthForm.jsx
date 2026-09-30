@@ -11,7 +11,7 @@ export function Field({ label, ...props }) {
 
 export function AuthCard({ title, error, children }) {
   return (
-    <div className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="mx-auto max-w-md rounded-xl border border-slate-200 bg-surface p-8 shadow-sm">
       <h1 className="mb-6 text-2xl font-bold">{title}</h1>
       {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
       {children}

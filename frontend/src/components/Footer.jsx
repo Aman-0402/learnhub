@@ -4,10 +4,10 @@ import { SITE } from "../lib/site.js";
 const col = "space-y-2 text-sm text-slate-600";
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="print:hidden border-t border-slate-200 bg-surface">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="text-lg font-bold text-brand-600">{SITE.name}</p>
+          <p className="text-lg font-bold text-brand">{SITE.name}</p>
           <p className="mt-2 text-sm text-slate-600">Online and offline classes across every subject.</p>
         </div>
         <ul className={col}>

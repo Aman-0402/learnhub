@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
+import { useTitle } from "../lib/hooks.js";
 import PageHeader, { Card, Notice } from "../components/PageHeader.jsx";
 import { inputCls } from "../components/AuthForm.jsx";
 import { SITE } from "../lib/site.js";
 
 export default function Contact() {
+  useTitle("Contact");
   const [f, setF] = useState({ name: "", email: "", message: "" });
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
