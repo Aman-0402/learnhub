@@ -11,7 +11,7 @@ A website to sell online and offline classes across multiple subjects. Students 
 - "My courses" page
 - Django admin for subjects, courses, students and enrollments
 - Instructors, lessons and schedule, a contact form and change-password
-- Payments are **mocked** for now. The gateway seam is `backend/enrollments/payments.py`; add Razorpay there.
+- Payments: **mock by default**. Razorpay is wired in (`backend/enrollments/payments.py`, webhook at `/api/payments/razorpay/webhook/`) and switches on with `PAYMENT_GATEWAY=razorpay` plus your keys in `backend/.env`. See `Agent.md` for the go-live checklist.
 
 ## Run locally
 

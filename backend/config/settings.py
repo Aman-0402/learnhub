@@ -117,3 +117,9 @@ CORS_ALLOWED_ORIGINS = os.getenv(
 # MySQL/MariaDB cannot create the conditional unique constraint on Enrollment.
 # The "one paid enrollment per student and course" rule is enforced in enrollments.views.PayView instead.
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
+
+# Payments. "mock" marks payments as paid without charging. Set PAYMENT_GATEWAY=razorpay plus the keys below to go live.
+PAYMENT_GATEWAY = os.getenv("PAYMENT_GATEWAY", "mock")
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")

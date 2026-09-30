@@ -17,6 +17,7 @@ class Enrollment(models.Model):
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_ref = models.CharField(max_length=100, blank=True)
+    gateway_order_id = models.CharField(max_length=100, blank=True, db_index=True)
     reference = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(null=True, blank=True)

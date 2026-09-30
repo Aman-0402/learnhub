@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
+import { useAuth } from "../lib/auth.jsx";
+import { payWithRazorpay } from "../lib/razorpay.js";
 import { inr } from "../components/CourseCard.jsx";
 
 export default function Checkout() {
   const { slug } = useParams();
   const nav = useNavigate();
+  const { user } = useAuth();
   const [course, setCourse] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [gateway, setGateway] = useState(null);
 
+  useEffect(() => { api("/payments/config/", { auth: false }).then((c) => setGateway(c.gateway)).catch(() => setGateway("mock")); }, []);
   useEffect(() => { api(`/courses/${slug}/`, { auth: false }).then(setCourse).catch((e) => setError(e.message)); }, [slug]);
 
-  // NOTE: payment is mocked on the backend until a real gateway (e.g. Razorpay) is added.
+  // The backend decides the gateway. "mock" confirms instantly (test mode); "razorpay" opens the Razorpay window.
   const pay = async () => {
     setBusy(true); setError("");
     try {
       const { enrollment, order } = await api("/enroll/", { method: "POST", body: { course: course.id } });
-      await api(`/enrollments/${enrollment.reference}/pay/`, { method: "POST", body: { order_id: order.order_id } });
+      const proof = order.gateway === "razorpay"
+        ? await payWithRazorpay({ order, title: course.title, user })
+        : { order_id: order.order_id };
+      await api(`/enrollments/${enrollment.reference}/pay/`, { method: "POST", body: proof });
       nav("/dashboard", { replace: true, state: { justEnrolled: course.title } });
     } catch (e) { setError(e.message); setBusy(false); }
   };
@@ -31,7 +39,7 @@ export default function Checkout() {
         <p className="font-bold">{inr(course.fee)}</p>
       </div>
       <div className="flex justify-between py-4 text-lg font-bold"><span>Total</span><span>{inr(course.fee)}</span></div>
-      <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">Test mode: no real payment is taken yet.</p>
+      {gateway === "mock" && <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">Test mode: no real payment is taken yet.</p>}
       {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
       <button onClick={pay} disabled={busy} className="w-full rounded-lg bg-brand-600 px-4 py-2.5 font-semibold text-white hover:bg-brand-700 disabled:opacity-60">
         {busy ? "Processing…" : `Pay ${inr(course.fee)}`}
