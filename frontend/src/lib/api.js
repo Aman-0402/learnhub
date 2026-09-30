@@ -43,3 +43,15 @@ function errorMessage(data) {
     .map(([k, v]) => `${k === "non_field_errors" ? "" : k + ": "}${[].concat(v).join(" ")}`)
     .join(" ");
 }
+
+/** Fetch every page of the public course list. */
+export async function fetchAllCourses(params = "") {
+  const all = [];
+  let page = 1;
+  for (;;) {
+    const d = await api(`/courses/?page=${page}${params}`, { auth: false });
+    all.push(...d.results);
+    if (!d.next) return all;
+    page += 1;
+  }
+}

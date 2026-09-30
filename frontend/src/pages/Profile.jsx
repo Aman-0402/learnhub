@@ -1,0 +1,36 @@
+import { useState } from "react";
+import { api } from "../lib/api.js";
+import { useAuth } from "../lib/auth.jsx";
+import PageHeader, { Card, Notice } from "../components/PageHeader.jsx";
+import { Field, submitCls } from "../components/AuthForm.jsx";
+
+export default function Profile() {
+  const { user, setUser } = useAuth();
+  const [form, setForm] = useState({ full_name: user.full_name, phone: user.phone || "" });
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  const save = async (e) => {
+    e.preventDefault(); setBusy(true); setMsg(null);
+    try {
+      setUser(await api("/auth/me/", { method: "PATCH", body: form }));
+      setMsg({ kind: "ok", text: "Profile updated." });
+    } catch (err) { setMsg({ kind: "error", text: err.message }); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="mx-auto max-w-xl">
+      <PageHeader title="Profile" subtitle="Keep your details up to date." />
+      <Card>
+        <form onSubmit={save} className="space-y-4">
+          {msg && <Notice kind={msg.kind}>{msg.text}</Notice>}
+          <Field label="Email" value={user.email} disabled readOnly />
+          <Field label="Full name" required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+          <Field label="Phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <button className={submitCls} disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>
+        </form>
+      </Card>
+    </div>
+  );
+}

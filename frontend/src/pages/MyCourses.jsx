@@ -22,7 +22,7 @@ export default function MyCourses() {
         {items?.map((e) => (
           <div key={e.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-5">
             <div>
-              <Link to={`/courses/${e.course.slug}`} className="font-semibold hover:text-brand-600">{e.course.title}</Link>
+              <Link to={`/learn/${e.course.slug}`} className="font-semibold hover:text-brand-600">{e.course.title}</Link>
               <div className="mt-1 flex items-center gap-2 text-sm text-slate-500">
                 <ModeBadge mode={e.course.mode} label={e.course.mode_display} />
                 <span>{e.course.subject.name}</span>

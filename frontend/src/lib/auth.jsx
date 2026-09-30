@@ -27,5 +27,5 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => { tokens.clear(); setUser(null); }, []);
 
-  return <AuthCtx.Provider value={{ user, loading, login, register, logout }}>{children}</AuthCtx.Provider>;
+  return <AuthCtx.Provider value={{ user, loading, login, register, logout, setUser }}>{children}</AuthCtx.Provider>;
 }

@@ -13,7 +13,7 @@ export default function Register() {
 
   const submit = async (e) => {
     e.preventDefault(); setBusy(true); setError("");
-    try { await register(form); nav("/courses", { replace: true }); }
+    try { await register(form); nav("/dashboard", { replace: true }); }
     catch (err) { setError(err.message); }
     finally { setBusy(false); }
   };

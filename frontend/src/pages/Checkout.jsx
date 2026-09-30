@@ -18,7 +18,7 @@ export default function Checkout() {
     try {
       const { enrollment, order } = await api("/enroll/", { method: "POST", body: { course: course.id } });
       await api(`/enrollments/${enrollment.reference}/pay/`, { method: "POST", body: { order_id: order.order_id } });
-      nav("/my-courses", { replace: true, state: { justEnrolled: course.title } });
+      nav("/dashboard", { replace: true, state: { justEnrolled: course.title } });
     } catch (e) { setError(e.message); setBusy(false); }
   };
 

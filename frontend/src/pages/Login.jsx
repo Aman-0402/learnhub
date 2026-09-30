@@ -6,7 +6,7 @@ import { AuthCard, Field, submitCls } from "../components/AuthForm.jsx";
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
-  const from = useLocation().state?.from || "/courses";
+  const from = useLocation().state?.from || "/dashboard";
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
