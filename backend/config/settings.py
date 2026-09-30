@@ -102,7 +102,7 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": (),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 12,
-    "DEFAULT_THROTTLE_RATES": {"contact": "5/hour"},
+    "DEFAULT_THROTTLE_RATES": {"contact": "5/hour", "password_reset": "10/hour"},
 }
 
 SIMPLE_JWT = {
@@ -123,3 +123,16 @@ PAYMENT_GATEWAY = os.getenv("PAYMENT_GATEWAY", "mock")
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
+
+# Email. In development emails are printed to the server console; set EMAIL_BACKEND and the SMTP values for real delivery.
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") == "1"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "LearnHub <no-reply@learnhub.example>")
+
+# Where reset links point (the React app) and how long they stay valid.
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 2  # seconds

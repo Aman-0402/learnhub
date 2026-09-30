@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
@@ -104,3 +105,43 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.course.title}: {self.title}"
+
+
+WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+
+def validate_days(value):
+    days = [d.strip() for d in value.split(",") if d.strip()]
+    bad = [d for d in days if d not in WEEKDAYS]
+    if not days or bad:
+        raise ValidationError(f"Use comma-separated days from {', '.join(WEEKDAYS)}. Got: {value!r}")
+
+
+class Batch(models.Model):
+    """A recurring weekly class slot for a course, e.g. weekday evenings."""
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="batches")
+    label = models.CharField(max_length=100, help_text="e.g. Weekday evenings")
+    days = models.CharField(max_length=40, validators=[validate_days], help_text="Comma-separated, e.g. Mon,Wed,Fri")
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    start_date = models.DateField(null=True, blank=True, help_text="Leave empty to use the course start date")
+    format = models.CharField(max_length=100, blank=True, help_text="e.g. In person. Leave empty to use the course format")
+    seats = models.PositiveIntegerField(null=True, blank=True, help_text="Leave empty for unlimited")
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["course", "start_time", "id"]
+        verbose_name_plural = "batches"
+
+    @property
+    def days_list(self):
+        chosen = {d.strip() for d in self.days.split(",")}
+        return [d for d in WEEKDAYS if d in chosen]
+
+    def clean(self):
+        if self.start_time and self.end_time and self.end_time <= self.start_time:
+            raise ValidationError({"end_time": "End time must be after the start time."})
+
+    def __str__(self):
+        return f"{self.course.title}: {self.label}"

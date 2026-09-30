@@ -29,7 +29,7 @@ export default function ResetPassword() {
     if (f.password !== f.confirm) return setError("The two passwords do not match.");
     setBusy(true);
     try { await confirmPasswordReset({ uid, token, new_password: f.password }); setDone(true); }
-    catch (err) { setError(err.status === 400 ? "This link has expired or was already used. Request a new one." : err.message); }
+    catch (err) { setError(err.message); }
     finally { setBusy(false); }
   };
 

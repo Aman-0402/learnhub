@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
 import { useFetch, useTitle } from "../lib/hooks.js";
-import { chosenBatch } from "../lib/services.js";
+import { chosenBatch, isSample } from "../lib/services.js";
 import { ModeBadge } from "../components/CourseCard.jsx";
 import { CourseThumb } from "../components/Media.jsx";
 import { Timetable } from "../components/Batches.jsx";
@@ -38,7 +38,7 @@ export default function Learn() {
   }
 
   const c = enrollment.course;
-  const batch = enrollment.batch || chosenBatch.get(slug);
+  const batch = enrollment.batch || (isSample("batchesApi") ? chosenBatch.get(slug) : null);
   const sessions = lessons.filter((l) => l.session_at);
   const detail = [
     ["Instructor", c.instructor], ["Format", c.mode_display], ["Duration", `${c.duration_weeks} weeks`],

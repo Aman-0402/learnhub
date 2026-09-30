@@ -28,7 +28,7 @@ export default function Checkout() {
   if (loading) return <DetailSkeleton />;
   if (loadError) return <ErrorState message={loadError} status={status} onRetry={reload} />;
 
-  const batch = batches?.find((b) => b.id === batchId) || null;
+  const batch = batches?.find((b) => String(b.id) === batchId) || null;
   const missingBatch = batches?.length > 0 && !batch;
 
   // The backend decides the gateway. "mock" confirms instantly (test mode); "razorpay" opens the Razorpay window.
@@ -38,7 +38,7 @@ export default function Checkout() {
       const { enrollment, order } = await api("/enroll/", { method: "POST", body: { course: course.id, ...(batch && { batch: batch.id }) } });
       const proof = order.gateway === "razorpay" ? await payWithRazorpay({ order, title: course.title, user }) : { order_id: order.order_id };
       await api(`/enrollments/${enrollment.reference}/pay/`, { method: "POST", body: proof });
-      if (batch) chosenBatch.set(slug, batch);
+      if (batch && isSample("batchesApi")) chosenBatch.set(slug, batch); // with the real API the server remembers the batch
       nav("/dashboard", { replace: true, state: { justEnrolled: course.title } });
     } catch (e) { setError(e.message); setBusy(false); }
   };

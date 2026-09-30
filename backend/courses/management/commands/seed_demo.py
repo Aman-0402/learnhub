@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from courses.models import Course, Instructor, Lesson, Subject
+from courses.models import Batch, Course, Instructor, Lesson, Subject
 
 INSTRUCTORS = {
     "Dr. Meera Nair": "Mathematics Teacher, 12 years of experience",
@@ -54,6 +54,12 @@ class Command(BaseCommand):
             )
             created += was_created
             if was_created:
+                offline = mode != "online"
+                Batch.objects.create(course=course, label="Weekday evenings", days="Mon,Wed,Fri", start_time=time(18, 0), end_time=time(19, 30),
+                                     format="Online, with in-person Fridays" if mode == "hybrid" else "In person" if offline else "Online",
+                                     seats=30 if offline else None)
+                Batch.objects.create(course=course, label="Weekend mornings", days="Sat,Sun", start_time=time(10, 0), end_time=time(12, 0),
+                                     format="In person" if offline else "Online", seats=30 if offline else None)
                 for n, (lt, kind, mins) in enumerate(LESSONS, start=1):
                     session = None
                     if kind == "live":

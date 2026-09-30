@@ -10,7 +10,7 @@ A website to sell online and offline classes across multiple subjects. Students 
 - Enrollment and checkout, with seat limits and duplicate-enrollment protection
 - "My courses" page
 - Dark mode, loading and error states, printable receipts, and an accessibility-checked UI
-- Password reset and class batches: frontend done on sample data, backend coming (see `Agent.md`)
+- Password reset by email and class batches with seat limits
 - Django admin for subjects, courses, students and enrollments
 - Instructors, lessons and schedule, a contact form and change-password
 - Payments: **mock by default**. Razorpay is wired in (`backend/enrollments/payments.py`, webhook at `/api/payments/razorpay/webhook/`) and switches on with `PAYMENT_GATEWAY=razorpay` plus your keys in `backend/.env`. See `Agent.md` for the go-live checklist.
@@ -48,10 +48,12 @@ cd backend && DB_ENGINE=sqlite python manage.py test
 | POST | `/api/auth/register/`, `/api/auth/login/`, `/api/auth/refresh/` | no |
 | GET/PATCH | `/api/auth/me/` | yes |
 | POST | `/api/auth/change-password/` | yes |
+| POST | `/api/auth/password-reset/`, `/api/auth/password-reset/confirm/` | no |
+| GET | `/api/courses/<slug>/batches/` | no |
 | GET | `/api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/` | no |
 | GET | `/api/instructors/`, `/api/instructors/<slug>/` | no |
 | POST | `/api/contact/` (5 per hour per visitor) | no |
-| POST | `/api/enroll/` `{course}` then `/api/enrollments/<ref>/pay/` | yes |
+| POST | `/api/enroll/` `{course, batch}` then `/api/enrollments/<ref>/pay/` | yes |
 | GET | `/api/my-courses/` | yes |
 | GET | `/api/courses/<slug>/lessons/` (paid students and staff) | yes |
 

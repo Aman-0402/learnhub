@@ -17,7 +17,7 @@ export function BatchPicker({ batches, value, onChange }) {
           const full = b.seats_left === 0;
           return (
             <label key={b.id} className={`block cursor-pointer rounded-lg border p-3 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${full ? "cursor-not-allowed opacity-60" : "border-slate-200"}`}>
-              <input type="radio" name="batch" className="sr-only" disabled={full} checked={value === b.id} onChange={() => onChange(b.id)} />
+              <input type="radio" name="batch" className="sr-only" disabled={full} checked={String(value) === String(b.id)} onChange={() => onChange(b.id)} />
               <span className="block font-medium">{b.label}</span>
               <span className="block text-slate-600">{dayList(b)} · {timeRange(b)}</span>
               <span className="block text-xs text-slate-500">{b.format}{b.seats_left != null && ` · ${full ? "Full" : `${b.seats_left} seats left`}`}</span>
@@ -52,7 +52,7 @@ export function Timetable({ batch }) {
         {DAY_ORDER.map((d) => {
           const on = batch.days.includes(d);
           return (
-            <li key={d} className={`rounded-lg px-1 py-2 ${on ? "bg-brand-600 font-semibold text-white" : "bg-slate-100 text-slate-500"}`}>
+            <li key={d} className={`rounded-lg px-1 py-2 ${on ? "bg-brand-600 font-semibold text-white" : "bg-slate-100 text-slate-600"}`}>
               {d}<span className="sr-only">{on ? ", class day" : ", no class"}</span>
             </li>
           );

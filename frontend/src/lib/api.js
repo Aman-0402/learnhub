@@ -36,22 +36,15 @@ export async function api(path, { method = "GET", body, auth = true } = {}, retr
   return data;
 }
 
+const FIELD_LABELS = { password: "", new_password: "", old_password: "Current password", email: "Email", full_name: "Name", phone: "Phone", message: "Message", name: "Name" };
+
 function errorMessage(data) {
   if (!data) return "";
   if (typeof data.detail === "string") return data.detail;
   return Object.entries(data)
-    .map(([k, v]) => `${k === "non_field_errors" ? "" : k + ": "}${[].concat(v).join(" ")}`)
+    .map(([k, v]) => {
+      const label = k in FIELD_LABELS ? FIELD_LABELS[k] : k === "non_field_errors" ? "" : k;
+      return `${label ? label + ": " : ""}${[].concat(v).join(" ")}`;
+    })
     .join(" ");
-}
-
-/** Fetch every page of the public course list. */
-export async function fetchAllCourses(params = "") {
-  const all = [];
-  let page = 1;
-  for (;;) {
-    const d = await api(`/courses/?page=${page}${params}`, { auth: false });
-    all.push(...d.results);
-    if (!d.next) return all;
-    page += 1;
-  }
 }

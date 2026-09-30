@@ -45,31 +45,35 @@ cd frontend && npm install && npm run dev   # site on :5173, proxies /api to :80
 ## Data model
 
 - `accounts.User`: email login, full_name, phone
-- `courses.Subject`, `courses.Instructor`, `courses.Course` (mode: online / offline / hybrid, fee, seats, start_date, location), `courses.Lesson` (video / reading / live / assignment)
-- `enrollments.Enrollment`: student + course, status pending / paid / failed, payment_ref
+- `courses.Subject`, `courses.Instructor`, `courses.Course` (mode: online / offline / hybrid, fee, seats, start_date, location), `courses.Batch` (weekly slot: days, times, optional own start date / format / seats), `courses.Lesson` (video / reading / live / assignment)
+- `enrollments.Enrollment`: student + course + batch, status pending / paid / failed, payment_ref
 - `contact.ContactMessage`: messages from the contact form (rate limited to 5 per hour per visitor)
 
 ## API summary
 
-Auth: `POST /api/auth/register|login|refresh/`, `GET/PATCH /api/auth/me/`, `POST /api/auth/change-password/`
-Public: `GET /api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/`, `/api/instructors/`, `/api/instructors/<slug>/`, `POST /api/contact/`
+Auth: `POST /api/auth/register|login|refresh/`, `GET/PATCH /api/auth/me/`, `POST /api/auth/change-password/`, `POST /api/auth/password-reset/` and `/password-reset/confirm/`
+Public: `GET /api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/`, `/api/instructors/`, `/api/instructors/<slug>/`, `/api/courses/<slug>/batches/`, `POST /api/contact/`
 Payments: `GET /api/payments/config/` (active gateway), `POST /api/payments/razorpay/webhook/` (called by Razorpay)
 Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-courses/`, `GET /api/courses/<slug>/lessons/` (paid students and staff only)
 
-## Frontend feature switches (sample data until the backend exists)
+## Frontend feature switches
 
-`frontend/src/lib/features.js` holds one switch per feature whose backend is not built yet. While a switch is `false` the page runs on
-built-in sample data (`lib/sample.js`, `lib/services.js`) and shows a visible "sample" note. When the endpoint is live, set it to `true`.
+`frontend/src/lib/features.js` has one switch per feature that can run on built-in sample data (`lib/sample.js`, `lib/services.js`) when its backend is missing.
+Both are now **on** (`true`), so the pages use the real API. Setting one back to `false` restores the sample-data behaviour with a visible "sample" note.
 
-| Switch | Pages | Endpoints the backend must provide |
+| Switch | Pages | Backend |
 |---|---|---|
-| `passwordResetApi` | Forgot password, Reset password | `POST /api/auth/password-reset/` `{email}` (always answer 200, never reveal whether the email exists); `POST /api/auth/password-reset/confirm/` `{uid, token, new_password}` (400 for an expired or used link) |
-| `batchesApi` | Course page batch picker, Checkout, Timetable tab | `GET /api/courses/<slug>/batches/` returning `[{id, label, days:["Mon",...], start_time:"18:00", end_time:"19:30", start_date, format, seats_left}]`; `POST /api/enroll/` must accept `batch`; `GET /api/my-courses/` should return `batch` on each enrollment |
+| `passwordResetApi` | Forgot password, Reset password | `POST /api/auth/password-reset/` `{email}` (same 200 answer whether or not the email exists), `POST /api/auth/password-reset/confirm/` `{uid, token, new_password}` |
+| `batchesApi` | Course page batch picker, Checkout, Timetable tab | `GET /api/courses/<slug>/batches/`, `POST /api/enroll/` accepts `batch`, `GET /api/my-courses/` returns `batch` |
 
 Images need no switch: `CourseThumb` and `Avatar` use `image_url` (course) and `photo_url` (instructor) when the API sends them, and draw a generated placeholder otherwise.
-The receipt page uses the existing `/api/my-courses/` data and needs no new endpoint.
+The receipt page uses `/api/my-courses/` and needs no new endpoint.
 
 ## Decisions and gotchas
+
+- Password reset: links are built from `FRONTEND_URL`, valid 2 hours (`PASSWORD_RESET_TIMEOUT`), single use (Django token), rate limited to 10 requests per hour per visitor (request and confirm share the limit). The request endpoint never reveals whether an email has an account, and an email failure is logged, not shown. In development emails are **printed to the server console** (`EMAIL_BACKEND=console`); for real delivery set the SMTP variables in `.env` (see `.env.example`).
+- Batches: if a course has active batches, enrolling **requires** a batch (400 otherwise); the batch must belong to the course and have a free seat, checked again at payment time. A student can change batch while the enrollment is still pending. Courses without batches work as before.
+- Batch `days` are stored as text ("Mon,Wed,Fri") and validated; the API returns them as a list in week order. Batch `seats_left` counts paid enrollments in that batch.
 
 - Payments go through `backend/enrollments/payments.py`. `get_gateway()` returns `MockGateway` (default) or `RazorpayGateway` based on `PAYMENT_GATEWAY`. Views never depend on a specific provider.
 - Razorpay structure is in place but has **never run against the real Razorpay API** (no keys yet). Order creation, signature checks and the webhook are covered by tests using a stubbed API and real HMAC math. The frontend popup is covered by a browser test with a stand-in Razorpay window.
@@ -93,12 +97,14 @@ The receipt page uses the existing `/api/my-courses/` data and needs no new endp
 | 2026-10-01 | Backend expanded: Instructor model (with data migration from the old name field), Lesson model and enrolled-only lessons endpoint, contact endpoint with rate limit, change-password endpoint, double-payment guard. 23 tests pass on MySQL. Frontend wired to all of it; full flow verified in a browser. |
 | 2026-10-01 | Added this Agent.md and a CLAUDE.md that loads it. |
 | 2026-10-01 | Frontend round 2: password reset pages, batch picker and weekly timetable, course and instructor images (generated placeholders), printable receipt, dark mode, loading skeletons and error states, accessibility pass. Password reset and batches run on sample data behind `features.js` switches. axe-core: 0 violations on all pages, light and dark; full flow verified in a browser. |
+| 2026-10-01 | Backend for the two sample features: password reset by email (request + confirm, console email in dev, SMTP via env, rate limited) and batches (model, endpoint, batch on enrollment with seat limits, admin, seed data). Frontend switches turned on. 57 backend tests pass on MySQL; real reset email, real batches, seat limits and accessibility verified in a browser against the live backend. |
 | 2026-10-01 | Razorpay structure added (off by default): `RazorpayGateway`, signature verification, webhook endpoint, `gateway_order_id`, `/api/payments/config/`, frontend `lib/razorpay.js` and Checkout hook. 38 backend tests pass; mock and stubbed-Razorpay checkout verified in a browser. Not yet tested with real Razorpay keys. |
 
 ## Status
 
 **Done**
-- Registration, login, JWT refresh, profile edit, change password
+- Registration, login, JWT refresh, profile edit, change password, forgot/reset password by email
+- Batches with weekly timetable and per-batch seat limits
 - Course catalog with subject / format / search filters
 - Instructors (list and profile pages), lessons, schedule
 - Enrollment and checkout with seat limits (mock payment), payment history
@@ -112,15 +118,14 @@ The receipt page uses the existing `/api/my-courses/` data and needs no new endp
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-0. Backend for the two sample-data features (see the switch table above): password reset by email, and batches; then flip the switches
 1. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
-2. Email: welcome email, payment receipt, password reset
+2. Email: welcome email and payment receipt email (the email plumbing and settings exist; password reset already uses them)
 3. Batches and timetable for offline and online classes
 4. Course images and instructor photos (file uploads)
 5. Production setup: Gunicorn, environment variables, static files, deployment
 
 **Known gaps**
-- Password reset and batches exist only as frontend sample data (backend not built)
+- Emails are only printed to the console until SMTP is configured in `.env`
 - No refunds or cancellations
 - Razorpay integration is untested against the live API
 - Real course thumbnails and instructor photos need an upload field on the backend (frontend is ready)

@@ -20,3 +20,7 @@ def mark_failed(enrollment):
         enrollment.status = Enrollment.Status.FAILED
         enrollment.save(update_fields=["status"])
     return enrollment
+
+
+def batch_is_full(batch):
+    return batch.seats is not None and batch.enrollments.filter(status=Enrollment.Status.PAID).count() >= batch.seats

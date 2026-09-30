@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Course, Instructor, Lesson, Subject
+from .models import Batch, Course, Instructor, Lesson, Subject
 
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -69,3 +69,31 @@ class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = ("id", "title", "kind", "kind_display", "order", "description", "url", "session_at", "duration_minutes")
+
+
+class BatchSerializer(serializers.ModelSerializer):
+    days = serializers.SerializerMethodField()
+    start_time = serializers.TimeField(format="%H:%M")
+    end_time = serializers.TimeField(format="%H:%M")
+    start_date = serializers.SerializerMethodField()
+    format = serializers.SerializerMethodField()
+    seats_left = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Batch
+        fields = ("id", "label", "days", "start_time", "end_time", "start_date", "format", "seats_left")
+
+    def get_days(self, obj):
+        return obj.days_list
+
+    def get_start_date(self, obj):
+        d = obj.start_date or obj.course.start_date
+        return d.isoformat() if d else None
+
+    def get_format(self, obj):
+        return obj.format or obj.course.get_mode_display()
+
+    def get_seats_left(self, obj):
+        if obj.seats is None:
+            return None
+        return max(obj.seats - obj.enrollments.filter(status="paid").count(), 0)

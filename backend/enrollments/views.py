@@ -3,11 +3,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from courses.models import Course
+from courses.models import Batch, Course
 
 from .models import Enrollment
 from .payments import PaymentError, get_gateway, verify_razorpay_webhook
-from .services import mark_failed, mark_paid
+from .services import batch_is_full, mark_failed, mark_paid
 from .serializers import EnrollCreateSerializer, EnrollmentSerializer
 
 
@@ -30,9 +30,24 @@ class EnrollView(APIView):
         if course.seats is not None and course.enrollments.filter(status="paid").count() >= course.seats:
             return Response({"detail": "This course is full."}, status=400)
 
-        enrollment, _ = Enrollment.objects.get_or_create(
-            student=request.user, course=course, status="pending", defaults={"amount": course.fee}
+        batch = None
+        active_batches = course.batches.filter(is_active=True)
+        if active_batches.exists():
+            batch_id = ser.validated_data.get("batch")
+            if not batch_id:
+                return Response({"detail": "Please choose a batch."}, status=400)
+            batch = active_batches.filter(pk=batch_id).first()
+            if batch is None:
+                return Response({"detail": "That batch is not available for this course."}, status=400)
+            if batch_is_full(batch):
+                return Response({"detail": "That batch is full. Please choose another."}, status=400)
+
+        enrollment, created = Enrollment.objects.get_or_create(
+            student=request.user, course=course, status="pending", defaults={"amount": course.fee, "batch": batch}
         )
+        if not created and enrollment.batch_id != (batch.pk if batch else None):
+            enrollment.batch = batch  # the student changed their mind before paying
+            enrollment.save(update_fields=["batch"])
         try:
             order = get_gateway().create_order(enrollment)
         except PaymentError as e:
@@ -67,6 +82,9 @@ class PayView(APIView):
         if course.seats is not None and course.enrollments.filter(status="paid").count() >= course.seats:
             return Response({"detail": "This course is full."}, status=400)
 
+        if enrollment.batch_id and batch_is_full(enrollment.batch):
+            return Response({"detail": "That batch is full. Please choose another."}, status=400)
+
         try:
             ok, ref = get_gateway().verify(enrollment, request.data)
         except PaymentError as e:
@@ -85,7 +103,7 @@ class MyEnrollmentsView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        return Enrollment.objects.filter(student=self.request.user, status="paid").select_related("course__subject")
+        return Enrollment.objects.filter(student=self.request.user, status="paid").select_related("course__subject", "batch__course")
 
 
 class RazorpayWebhookView(APIView):

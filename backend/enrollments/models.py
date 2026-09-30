@@ -3,7 +3,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 
-from courses.models import Course
+from courses.models import Batch, Course
 
 
 class Enrollment(models.Model):
@@ -14,6 +14,7 @@ class Enrollment(models.Model):
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="enrollments")
     course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name="enrollments")
+    batch = models.ForeignKey(Batch, null=True, blank=True, on_delete=models.SET_NULL, related_name="enrollments")
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_ref = models.CharField(max_length=100, blank=True)

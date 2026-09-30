@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from enrollments.models import Enrollment
 
 from .models import Course, Instructor, Subject
-from .serializers import CourseSerializer, InstructorSerializer, LessonSerializer, SubjectSerializer
+from .serializers import BatchSerializer, CourseSerializer, InstructorSerializer, LessonSerializer, SubjectSerializer
 
 
 class SubjectListView(generics.ListAPIView):
@@ -76,3 +76,12 @@ class CourseLessonsView(APIView):
             return Response({"detail": "Enroll in this course to access its lessons."}, status=403)
         lessons = course.lessons.filter(is_published=True)
         return Response(LessonSerializer(lessons, many=True).data)
+
+
+class CourseBatchesView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, slug):
+        course = get_object_or_404(Course, slug=slug, is_published=True)
+        batches = course.batches.filter(is_active=True).select_related("course")
+        return Response(BatchSerializer(batches, many=True).data)

@@ -5,6 +5,6 @@
 //                            POST /api/auth/password-reset/confirm/  {uid, token, new_password}
 //   batchesApi        needs  GET  /api/courses/<slug>/batches/       and  POST /api/enroll/ {course, batch}
 export const FEATURES = {
-  passwordResetApi: false,
-  batchesApi: false,
+  passwordResetApi: true,
+  batchesApi: true,
 };
