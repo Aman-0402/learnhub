@@ -57,6 +57,9 @@ class PayView(APIView):
         if enrollment.status == "paid":
             return Response(EnrollmentSerializer(enrollment).data)
 
+        if Enrollment.objects.filter(student=request.user, course=enrollment.course, status="paid").exists():
+            return Response({"detail": "You are already enrolled in this course."}, status=400)
+
         course = enrollment.course
         if course.seats is not None and course.enrollments.filter(status="paid").count() >= course.seats:
             return Response({"detail": "This course is full."}, status=400)

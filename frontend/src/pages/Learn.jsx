@@ -4,17 +4,23 @@ import { api } from "../lib/api.js";
 import { ModeBadge } from "../components/CourseCard.jsx";
 import { Card, Notice } from "../components/PageHeader.jsx";
 
-const TABS = ["Overview", "Schedule", "Materials"];
+const TABS = ["Overview", "Schedule", "Lessons"];
+const when = (d) => new Date(d).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
 
 export default function Learn() {
   const { slug } = useParams();
   const [enrollment, setEnrollment] = useState(undefined); // undefined = loading, null = not enrolled
   const [tab, setTab] = useState("Overview");
+  const [lessons, setLessons] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
     api("/my-courses/")
-      .then((list) => setEnrollment(list.find((e) => e.course.slug === slug) || null))
+      .then(async (list) => {
+        const found = list.find((e) => e.course.slug === slug) || null;
+        setEnrollment(found);
+        if (found) setLessons(await api(`/courses/${slug}/lessons/`));
+      })
       .catch((e) => setError(e.message));
   }, [slug]);
 
@@ -31,6 +37,7 @@ export default function Learn() {
   }
 
   const c = enrollment.course;
+  const sessions = lessons.filter((l) => l.session_at);
   const detail = [
     ["Instructor", c.instructor],
     ["Format", c.mode_display],
@@ -67,13 +74,39 @@ export default function Learn() {
       )}
       {tab === "Schedule" && (
         <Card>
-          {c.start_date ? (
-            <p>Classes begin on <strong>{new Date(c.start_date).toLocaleDateString("en-IN", { dateStyle: "full" })}</strong>{c.location && <> at <strong>{c.location}</strong></>}. The full weekly timetable will be shared here.</p>
-          ) : <p className="text-slate-600">The start date has not been announced yet.</p>}
+          {c.start_date && (
+            <p className="mb-4">Classes begin on <strong>{new Date(c.start_date).toLocaleDateString("en-IN", { dateStyle: "full" })}</strong>{c.location && <> at <strong>{c.location}</strong></>}.</p>
+          )}
+          {sessions.length > 0 ? (
+            <ul className="divide-y divide-slate-100">
+              {sessions.map((l) => (
+                <li key={l.id} className="flex items-center justify-between gap-4 py-3">
+                  <span className="font-medium">{l.title}</span>
+                  <span className="text-sm text-slate-600">{when(l.session_at)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : <p className="text-slate-600">{c.start_date ? "Class timings will be shared here." : "The start date has not been announced yet."}</p>}
         </Card>
       )}
-      {tab === "Materials" && (
-        <Card className="text-center"><p className="font-medium">No materials yet</p><p className="mt-1 text-sm text-slate-600">Lessons, notes and recordings will appear here once your instructor adds them.</p></Card>
+      {tab === "Lessons" && (
+        lessons.length === 0 ? (
+          <Card className="text-center"><p className="font-medium">No lessons yet</p><p className="mt-1 text-sm text-slate-600">Lessons and materials will appear here once your instructor adds them.</p></Card>
+        ) : (
+          <ol className="space-y-3">
+            {lessons.map((l, i) => (
+              <Card key={l.id} className="flex items-start gap-4 !p-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">{i + 1}</span>
+                <div className="flex-1">
+                  <p className="font-medium">{l.title}</p>
+                  <p className="text-sm text-slate-500">{l.kind_display}{l.duration_minutes ? ` · ${l.duration_minutes} min` : ""}{l.session_at ? ` · ${when(l.session_at)}` : ""}</p>
+                  {l.description && <p className="mt-1 text-sm text-slate-600">{l.description}</p>}
+                </div>
+                {l.url && <a href={l.url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-sm font-semibold text-brand-600 hover:underline">Open</a>}
+              </Card>
+            ))}
+          </ol>
+        )
       )}
     </div>
   );

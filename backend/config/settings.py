@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "accounts",
     "courses",
     "enrollments",
+    "contact",
 ]
 
 MIDDLEWARE = [
@@ -101,6 +102,7 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": (),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 12,
+    "DEFAULT_THROTTLE_RATES": {"contact": "5/hour"},
 }
 
 SIMPLE_JWT = {
@@ -111,3 +113,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
 ).split(",")
+
+# MySQL/MariaDB cannot create the conditional unique constraint on Enrollment.
+# The "one paid enrollment per student and course" rule is enforced in enrollments.views.PayView instead.
+SILENCED_SYSTEM_CHECKS = ["models.W036"]

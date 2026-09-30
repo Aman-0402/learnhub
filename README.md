@@ -10,6 +10,7 @@ A website to sell online and offline classes across multiple subjects. Students 
 - Enrollment and checkout, with seat limits and duplicate-enrollment protection
 - "My courses" page
 - Django admin for subjects, courses, students and enrollments
+- Instructors, lessons and schedule, a contact form and change-password
 - Payments are **mocked** for now. The gateway seam is `backend/enrollments/payments.py`; add Razorpay there.
 
 ## Run locally
@@ -44,6 +45,12 @@ cd backend && DB_ENGINE=sqlite python manage.py test
 |---|---|---|
 | POST | `/api/auth/register/`, `/api/auth/login/`, `/api/auth/refresh/` | no |
 | GET/PATCH | `/api/auth/me/` | yes |
+| POST | `/api/auth/change-password/` | yes |
 | GET | `/api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/` | no |
+| GET | `/api/instructors/`, `/api/instructors/<slug>/` | no |
+| POST | `/api/contact/` (5 per hour per visitor) | no |
 | POST | `/api/enroll/` `{course}` then `/api/enrollments/<ref>/pay/` | yes |
 | GET | `/api/my-courses/` | yes |
+| GET | `/api/courses/<slug>/lessons/` (paid students and staff) | yes |
+
+See `Agent.md` for project rules, decisions and the progress log.

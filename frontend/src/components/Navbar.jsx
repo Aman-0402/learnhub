@@ -32,7 +32,7 @@ export default function Navbar() {
             <>
               <NavLink to="/dashboard" className={link}>Dashboard</NavLink>
               <NavLink to="/profile" className={link}>{user.full_name.split(" ")[0]}</NavLink>
-              <button onClick={() => { logout(); nav("/"); }} className="text-sm font-medium text-slate-600 hover:text-slate-900">Log out</button>
+              <button onClick={() => { nav("/"); logout(); }} className="text-sm font-medium text-slate-600 hover:text-slate-900">Log out</button>
             </>
           ) : (
             <>
@@ -57,7 +57,7 @@ export default function Navbar() {
               <NavLink to="/my-courses" className={link} onClick={close}>My courses</NavLink>
               <NavLink to="/payments" className={link} onClick={close}>Payments</NavLink>
               <NavLink to="/profile" className={link} onClick={close}>Profile</NavLink>
-              <button onClick={() => { close(); logout(); nav("/"); }} className="text-left text-sm font-medium text-slate-600">Log out</button>
+              <button onClick={() => { close(); nav("/"); logout(); }} className="text-left text-sm font-medium text-slate-600">Log out</button>
             </>
           ) : (
             <>

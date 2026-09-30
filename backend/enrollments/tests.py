@@ -83,3 +83,14 @@ class EnrollmentFlowTests(APITestCase):
         self.register("b@example.com")
         r = self.client.post(f"/api/enrollments/{ref}/pay/", {})
         self.assertEqual(r.status_code, 404)
+
+    def test_cannot_pay_twice_for_same_course(self):
+        self.register()
+        user = User.objects.get(email="a@example.com")
+        from enrollments.models import Enrollment
+        Enrollment.objects.create(student=user, course=self.online, status="paid", amount=1500)
+        dup = Enrollment.objects.create(student=user, course=self.online, status="pending", amount=1500)
+        r = self.client.post(f"/api/enrollments/{dup.reference}/pay/", {})
+        self.assertEqual(r.status_code, 400)
+        dup.refresh_from_db()
+        self.assertEqual(dup.status, "pending")

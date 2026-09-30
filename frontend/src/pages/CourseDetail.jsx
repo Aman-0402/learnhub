@@ -15,7 +15,7 @@ export default function CourseDetail() {
   const rows = [
     ["Duration", `${course.duration_weeks} weeks`],
     course.start_date && ["Starts", new Date(course.start_date).toLocaleDateString("en-IN", { dateStyle: "long" })],
-    course.instructor && ["Instructor", course.instructor],
+    course.instructor && ["Instructor", course.instructor_slug ? <Link key="i" to={`/instructors/${course.instructor_slug}`} className="text-brand-600 hover:underline">{course.instructor}</Link> : course.instructor],
     course.location && ["Location", course.location],
     course.seats_left != null && ["Seats left", String(course.seats_left)],
   ].filter(Boolean);

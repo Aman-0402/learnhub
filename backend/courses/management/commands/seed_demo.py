@@ -1,9 +1,17 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, time
 from decimal import Decimal
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
-from courses.models import Course, Subject
+from courses.models import Course, Instructor, Lesson, Subject
+
+INSTRUCTORS = {
+    "Dr. Meera Nair": "Mathematics Teacher, 12 years of experience",
+    "Rohan Verma": "Physics and Science Educator",
+    "Sara Thomas": "English Communication Coach",
+    "Kabir Shah": "Software Engineer and Trainer",
+}
 
 DEMO = [
     ("Mathematics", "Algebra Foundations", "online", "1499", 6, "", "Dr. Meera Nair"),
@@ -14,23 +22,45 @@ DEMO = [
     ("Computer Science", "Web Development with React", "hybrid", "4999", 12, "Vadodara Centre", "Kabir Shah"),
 ]
 
+LESSONS = [
+    ("Welcome and course roadmap", "video", 15),
+    ("Core concepts, part 1", "video", 40),
+    ("Practice worksheet", "assignment", 30),
+    ("Live doubt-clearing class", "live", 60),
+]
+
 
 class Command(BaseCommand):
-    help = "Create demo subjects and courses for local development."
+    help = "Create demo subjects, instructors, courses and lessons for local development."
 
     def handle(self, *args, **opts):
+        people = {}
+        for name, headline in INSTRUCTORS.items():
+            people[name], _ = Instructor.objects.get_or_create(
+                name=name, defaults={"headline": headline, "bio": f"{name} teaches with a focus on clear explanations and practice."}
+            )
         created = 0
-        for i, (subj, title, mode, fee, weeks, loc, instructor) in enumerate(DEMO):
+        for i, (subj, title, mode, fee, weeks, loc, teacher) in enumerate(DEMO):
             subject, _ = Subject.objects.get_or_create(name=subj)
-            _, was_created = Course.objects.get_or_create(
+            start = date.today() + timedelta(days=14 + 7 * i)
+            course, was_created = Course.objects.get_or_create(
                 title=title,
                 defaults=dict(
                     subject=subject, mode=mode, fee=Decimal(fee), duration_weeks=weeks,
-                    location=loc, instructor=instructor,
+                    location=loc, instructor=people[teacher],
                     description=f"{title}: a structured {weeks}-week course with practice and feedback.",
-                    start_date=date.today() + timedelta(days=14 + 7 * i),
-                    seats=30 if mode != "online" else None,
+                    start_date=start, seats=30 if mode != "online" else None,
                 ),
             )
             created += was_created
+            if was_created:
+                for n, (lt, kind, mins) in enumerate(LESSONS, start=1):
+                    session = None
+                    if kind == "live":
+                        session = timezone.make_aware(datetime.combine(start + timedelta(days=7), time(18, 0)))
+                    Lesson.objects.create(
+                        course=course, title=lt, kind=kind, order=n, duration_minutes=mins,
+                        description=f"{lt} for {title}.", session_at=session,
+                        url="https://example.com/replace-me" if kind != "live" else "",
+                    )
         self.stdout.write(self.style.SUCCESS(f"Seeded {created} new course(s)."))
