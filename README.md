@@ -1,0 +1,49 @@
+# LearnHub
+
+A website to sell online and offline classes across multiple subjects. Students register, browse courses, enroll and pay the fee.
+
+**Stack:** React (Vite) + Tailwind CSS · Django REST Framework + JWT · MySQL
+
+## Features (v0.1)
+- Student registration and login (email + password, JWT)
+- Course catalog with subject, format (online / offline / hybrid) and text filters
+- Enrollment and checkout, with seat limits and duplicate-enrollment protection
+- "My courses" page
+- Django admin for subjects, courses, students and enrollments
+- Payments are **mocked** for now. The gateway seam is `backend/enrollments/payments.py`; add Razorpay there.
+
+## Run locally
+
+### Backend
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env        # set DB_* for MySQL, or DB_ENGINE=sqlite for quick dev
+python manage.py migrate
+python manage.py seed_demo  # optional sample courses
+python manage.py createsuperuser
+python manage.py runserver
+```
+Create the MySQL database first: `CREATE DATABASE learnhub CHARACTER SET utf8mb4;`
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev    # http://localhost:5173, proxies /api to Django on :8000
+```
+
+### Tests
+```bash
+cd backend && DB_ENGINE=sqlite python manage.py test
+```
+
+## API
+| Method | Path | Auth |
+|---|---|---|
+| POST | `/api/auth/register/`, `/api/auth/login/`, `/api/auth/refresh/` | no |
+| GET/PATCH | `/api/auth/me/` | yes |
+| GET | `/api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/` | no |
+| POST | `/api/enroll/` `{course}` then `/api/enrollments/<ref>/pay/` | yes |
+| GET | `/api/my-courses/` | yes |
