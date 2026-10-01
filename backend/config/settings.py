@@ -94,6 +94,14 @@ USE_TZ = True
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Uploaded lesson videos. In production, put a real web server or object storage in
+# front of this instead of serving MEDIA_ROOT from Django.
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+LESSON_VIDEO_MAX_BYTES = 300 * 1024 * 1024  # 300 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = LESSON_VIDEO_MAX_BYTES
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # stream anything bigger straight to a temp file
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",

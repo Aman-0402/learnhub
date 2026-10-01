@@ -20,9 +20,10 @@ async function refreshAccess() {
 }
 
 export async function api(path, { method = "GET", body, auth = true } = {}, retry = true) {
-  const headers = { "Content-Type": "application/json" };
+  const isFormData = body instanceof FormData;
+  const headers = isFormData ? {} : { "Content-Type": "application/json" };
   if (auth && store.access) headers.Authorization = `Bearer ${store.access}`;
-  const res = await fetch(`/api${path}`, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const res = await fetch(`/api${path}`, { method, headers, body: isFormData ? body : body ? JSON.stringify(body) : undefined });
   if (res.status === 401 && auth && retry && (await refreshAccess())) {
     return api(path, { method, body, auth }, false);
   }

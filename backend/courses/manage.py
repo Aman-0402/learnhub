@@ -2,6 +2,7 @@
 from django.db.models import Count, ProtectedError, Q
 from rest_framework import serializers, status, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from accounts.permissions import IsStaffRole
@@ -118,11 +119,26 @@ class BatchManageSerializer(serializers.ModelSerializer):
 
 class LessonManageSerializer(serializers.ModelSerializer):
     course_title = serializers.CharField(source="course.title", read_only=True)
+    video_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
-        fields = ("id", "course", "course_title", "title", "kind", "order", "description", "url", "session_at",
-                  "duration_minutes", "is_published")
+        fields = ("id", "course", "course_title", "title", "kind", "order", "description", "url", "video",
+                  "video_url", "session_at", "duration_minutes", "is_published")
+        extra_kwargs = {"video": {"write_only": True, "required": False}}
+
+    def get_video_url(self, obj):
+        if not obj.video:
+            return ""
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.video.url) if request else obj.video.url
+
+    def update(self, instance, validated_data):
+        old = instance.video
+        updated = super().update(instance, validated_data)
+        if "video" in validated_data and old and old != updated.video:
+            old.delete(save=False)
+        return updated
 
 
 # ---------- views ----------
@@ -185,6 +201,7 @@ class BatchManageViewSet(ManageViewSet):
 
 class LessonManageViewSet(ManageViewSet):
     serializer_class = LessonManageSerializer
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def get_queryset(self):
         qs = Lesson.objects.select_related("course")

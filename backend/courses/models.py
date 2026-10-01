@@ -1,6 +1,14 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.text import slugify
+
+
+def validate_video_size(f):
+    limit = settings.LESSON_VIDEO_MAX_BYTES
+    if f.size > limit:
+        raise ValidationError(f"Video is too large ({f.size // (1024 * 1024)} MB). Maximum is {limit // (1024 * 1024)} MB.")
 
 
 class Subject(models.Model):
@@ -96,6 +104,11 @@ class Lesson(models.Model):
     order = models.PositiveIntegerField(default=1, help_text="Position within the course")
     description = models.TextField(blank=True)
     url = models.URLField(blank=True, help_text="Video link, document link or meeting link")
+    video = models.FileField(
+        upload_to="lesson_videos/%Y/%m/", blank=True, null=True,
+        validators=[FileExtensionValidator(["mp4", "webm", "mov", "m4v"]), validate_video_size],
+        help_text="An uploaded recording. Takes priority over the link above when both are set.",
+    )
     session_at = models.DateTimeField(null=True, blank=True, help_text="For live or in-person classes")
     duration_minutes = models.PositiveSmallIntegerField(null=True, blank=True)
     is_published = models.BooleanField(default=True)

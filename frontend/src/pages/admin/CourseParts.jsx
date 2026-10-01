@@ -132,11 +132,37 @@ function BatchForm({ course, item, onDone, onClose }) {
   );
 }
 
+function VideoUpload({ lessonId, videoUrl, onUploaded }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const upload = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setBusy(true); setErr("");
+    try { onUploaded(await manage.uploadFile("lessons", lessonId, "video", file)); }
+    catch (err) { setErr(fieldErrors(err).video || err.message); }
+    finally { setBusy(false); }
+  };
+  return (
+    <FormField label="Video" hint="Upload a recording (mp4, webm, mov; up to 300 MB). Replaces any existing video." error={err}>
+      {(p) => (
+        <div className="flex flex-wrap items-center gap-3">
+          {videoUrl && <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="link-draw text-sm font-semibold text-brand-strong">Current video<span className="sr-only"> (opens in a new tab)</span></a>}
+          <input {...p} type="file" accept="video/mp4,video/webm,video/quicktime" disabled={busy} onChange={upload} className="field" />
+          {busy && <span className="text-sm text-slate-600">Uploading...</span>}
+        </div>
+      )}
+    </FormField>
+  );
+}
+
 function LessonForm({ course, item, onDone, onClose }) {
   const [f, setF] = useState({
     title: item?.title || "", kind: item?.kind || "video", order: item?.order ?? 1, description: item?.description || "", url: item?.url || "",
     session_at: localDT(item?.session_at), duration_minutes: item?.duration_minutes ?? "", is_published: item ? item.is_published : true,
   });
+  const [videoUrl, setVideoUrl] = useState(item?.video_url || "");
   const { errs, busy, save } = useSave("lessons", item, onDone);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const submit = (e) => {
@@ -157,7 +183,8 @@ function LessonForm({ course, item, onDone, onClose }) {
         <FormField label="Order" error={errs.order}>{(p) => <input {...p} inputMode="numeric" className="field" value={f.order} onChange={set("order")} />}</FormField>
         <FormField label="Duration (minutes)" error={errs.duration_minutes}>{(p) => <input {...p} inputMode="numeric" className="field" value={f.duration_minutes} onChange={set("duration_minutes")} />}</FormField>
       </div>
-      <FormField label="Link" error={errs.url} hint="Video, document or meeting link.">{(p) => <input {...p} type="url" className="field" value={f.url} onChange={set("url")} />}</FormField>
+      <FormField label="Link" error={errs.url} hint="Video, document or meeting link. Ignored if a video is uploaded below.">{(p) => <input {...p} type="url" className="field" value={f.url} onChange={set("url")} />}</FormField>
+      {item && <VideoUpload lessonId={item.id} videoUrl={videoUrl} onUploaded={(row) => setVideoUrl(row.video_url)} />}
       <FormField label="Session time" error={errs.session_at} hint="For live or in-person classes.">{(p) => <input {...p} type="datetime-local" className="field" value={f.session_at} onChange={set("session_at")} />}</FormField>
       <FormField label="Description" error={errs.description}>{(p) => <textarea {...p} rows={3} className="field" value={f.description} onChange={set("description")} />}</FormField>
       <div className="flex items-center gap-3"><Toggle label="Published" checked={f.is_published} onChange={(v) => setF({ ...f, is_published: v })} /><span className="text-sm">Published (visible to enrolled students)</span></div>
@@ -185,7 +212,7 @@ export function LessonsPanel({ course }) {
       deleteText="This lesson will be removed from the course."
       renderRow={(l) => (
         <>
-          <p className="flex items-center gap-3 font-display text-lg font-semibold"><span className="num text-slate-500">{l.order}.</span>{l.title}<StatusTag on={l.is_published} /></p>
+          <p className="flex items-center gap-3 font-display text-lg font-semibold"><span className="num text-slate-500">{l.order}.</span>{l.title}<StatusTag on={l.is_published} />{l.video_url && <span className="tag">Video uploaded</span>}</p>
           <p className="text-sm text-slate-600">{KINDS.find(([v]) => v === l.kind)?.[1]}{l.duration_minutes ? `, ${l.duration_minutes} min` : ""}</p>
         </>
       )}

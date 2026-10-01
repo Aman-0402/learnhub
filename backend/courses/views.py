@@ -75,7 +75,7 @@ class CourseLessonsView(APIView):
         if not allowed:
             return Response({"detail": "Enroll in this course to access its lessons."}, status=403)
         lessons = course.lessons.filter(is_published=True)
-        return Response(LessonSerializer(lessons, many=True).data)
+        return Response(LessonSerializer(lessons, many=True, context={"request": request}).data)
 
 
 class CourseBatchesView(APIView):

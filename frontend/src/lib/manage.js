@@ -25,6 +25,11 @@ export const manage = {
   update: (res, id, body) => api(`/manage/${res}/${id}/`, { method: "PATCH", body }),
   remove: (res, id) => api(`/manage/${res}/${id}/`, { method: "DELETE" }),
   action: (res, id, action, body) => api(`/manage/${res}/${id}/${action}/`, { method: "POST", body }),
+  uploadFile: (res, id, field, file) => {
+    const form = new FormData();
+    form.set(field, file);
+    return api(`/manage/${res}/${id}/`, { method: "PATCH", body: form });
+  },
   summary: (res) => api(`/manage/${res}/summary/`),
   overview: () => api("/manage/overview/"),
 };

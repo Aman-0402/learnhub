@@ -65,10 +65,17 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class LessonSerializer(serializers.ModelSerializer):
     kind_display = serializers.CharField(source="get_kind_display", read_only=True)
+    video_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
-        fields = ("id", "title", "kind", "kind_display", "order", "description", "url", "session_at", "duration_minutes")
+        fields = ("id", "title", "kind", "kind_display", "order", "description", "url", "video_url", "session_at", "duration_minutes")
+
+    def get_video_url(self, obj):
+        if not obj.video:
+            return ""
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.video.url) if request else obj.video.url
 
 
 class BatchSerializer(serializers.ModelSerializer):
