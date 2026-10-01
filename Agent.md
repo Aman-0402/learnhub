@@ -129,6 +129,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Wrote `PHASES.md`: a phased plan for a proper in-frontend admin dashboard (today only Django admin at `/admin` exists; the React app has zero staff-only pages or API endpoints, and `User` has no `role` field). Phases: 0 foundations (role field, RequireStaff guard, admin shell), 1 staff-only DRF API, 2 courses/subjects/instructors UI, 3 enrollments & payments dashboard, 4 contact inbox, 5 staff/student directory, 6 dashboard home, 7 polish and audit. Each phase needs the owner's approval before work starts. |
 | 2026-10-01 | Admin dashboard Phase 0 (approved by the owner): `User.role` with migration and backfill (existing superuser became `superadmin`), role and Django flags kept in sync in `save()`, `role` returned by `/api/auth/me/` (read-only), `RequireStaff` guard and `/manage` admin shell with sidebar and a navbar link shown only to staff. Frontend path is `/manage` because `/admin` is Django admin. Also replaced em dashes in the owner's portfolio certificate list. 73 backend tests pass (6 new); build, pre-flight 0 violations; staff, student and anonymous access and axe (light, dark) checked in a browser. |
 | 2026-10-01 | Admin dashboard Phase 1 (approved by the owner): staff-only DRF API at `/api/manage/` for subjects, instructors, courses, batches and lessons (`IsStaffRole` permission, write serializers with validation, counts of paid and total enrollments, filters, pagination). Deleting protected items returns 409 with advice to unpublish. 21 new tests cover 401 for anonymous, 403 for students, staff CRUD, validation and delete safety; 94 backend tests pass on MariaDB. No frontend changes. |
+| 2026-10-01 | Admin dashboard Phase 2 (approved by the owner): `/manage` screens for Courses (search, status filter, inline publish switch, create, edit, delete), Subjects and Instructors (dialog forms), with Batches and Lessons edited from the course page. Client checks mirror the backend rules and server errors show under the field; 409 delete advice shown in the confirm dialog. New `lib/manage.js`, `components/admin/Kit.jsx`, `pages/admin/*`. Full CRUD flow, validation, delete safety and axe (light and dark) checked in a browser; build, pre-flight 0 violations, 94 backend tests pass. |
 
 ## Status
 
@@ -150,7 +151,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-1. Admin dashboard, built phase by phase from `PHASES.md` (Phases 0 and 1 done; Phase 2, the courses, subjects and instructors screens, is next). Each phase needs the owner's approval before it starts.
+1. Admin dashboard, built phase by phase from `PHASES.md` (Phases 0 to 2 done; Phase 3, the enrollments and payments dashboard, is next). Each phase needs the owner's approval before it starts.
 2. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
 3. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
 4. Production setup: Gunicorn, environment variables, static files, deployment

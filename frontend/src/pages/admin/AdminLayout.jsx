@@ -1,12 +1,15 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { motion } from "motion/react";
-import { SquaresFour, ArrowLeft } from "@phosphor-icons/react";
+import { SquaresFour, ArrowLeft, BookOpen, Tag, ChalkboardTeacher } from "@phosphor-icons/react";
 import { useTitle } from "../../lib/hooks.js";
 import { useAuth } from "../../lib/auth.jsx";
 
 // Each phase of PHASES.md adds its links here.
 const LINKS = [
   { to: "/manage", label: "Overview", icon: SquaresFour, end: true },
+  { to: "/manage/courses", label: "Courses", icon: BookOpen },
+  { to: "/manage/subjects", label: "Subjects", icon: Tag },
+  { to: "/manage/instructors", label: "Instructors", icon: ChalkboardTeacher },
 ];
 
 const item = ({ isActive }) =>

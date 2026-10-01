@@ -27,6 +27,10 @@ const Profile = lazy(() => import("./pages/Profile.jsx"));
 const Portfolio = lazy(() => import("./pages/Portfolio.jsx"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout.jsx"));
 const AdminHome = lazy(() => import("./pages/admin/AdminHome.jsx"));
+const AdminCourses = lazy(() => import("./pages/admin/Courses.jsx"));
+const AdminCourseForm = lazy(() => import("./pages/admin/CourseForm.jsx"));
+const AdminSubjects = lazy(() => import("./pages/admin/Subjects.jsx"));
+const AdminInstructors = lazy(() => import("./pages/admin/Instructors.jsx"));
 const Saved = lazy(() => import("./pages/Saved.jsx"));
 const Compare = lazy(() => import("./pages/Compare.jsx"));
 import { useTitle } from "./lib/hooks.js";
@@ -73,6 +77,11 @@ export default function App() {
           <Route path="/profile" element={guard(<Profile />)} />
           <Route path="/manage" element={<RequireStaff><AdminLayout /></RequireStaff>}>
             <Route index element={<AdminHome />} />
+            <Route path="courses" element={<AdminCourses />} />
+            <Route path="courses/new" element={<AdminCourseForm />} />
+            <Route path="courses/:id" element={<AdminCourseForm />} />
+            <Route path="subjects" element={<AdminSubjects />} />
+            <Route path="instructors" element={<AdminInstructors />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

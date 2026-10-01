@@ -38,10 +38,12 @@ Role and flags stay in sync in `User.save()`: if `role` is changed in code it wi
 
 Mounted at `/api/manage/{subjects,instructors,courses,batches,lessons}/` (code in `courses/manage.py` and `courses/manage_urls.py`, permission in `accounts/permissions.py`). Lists are paginated (50 per page, `?page_size=` up to 200) and include unpublished and inactive items. Filters: courses `?q=&subject=&published=true|false`, batches and lessons `?course=<id>`. Rules: offline and hybrid courses need a location, fee is not negative, seats cannot drop below the paid count, batch days are a list in week order and end time must be after start time. Deleting a subject or a course with enrollments returns 409 (unpublish the course instead); deleting an instructor keeps their courses; deleting a batch keeps its enrollments. Slugs are generated once and never change when a title is edited, so public links stay stable.
 
-## Phase 2: Courses, subjects, instructors UI
-- [ ] Admin pages: Courses (list, create, edit, publish toggle, delete), Subjects,
+## Phase 2: Courses, subjects, instructors UI (done)
+- [x] Admin pages: Courses (list, create, edit, publish toggle, delete), Subjects,
       Instructors. Batches and Lessons editable from a course's detail page.
-- [ ] Form validation mirrors backend (zod-equivalent or plain checks).
+- [x] Form validation mirrors backend (zod-equivalent or plain checks).
+
+Routes: `/manage/courses`, `/manage/courses/new`, `/manage/courses/:id` (batches and lessons panels appear once the course exists), `/manage/subjects`, `/manage/instructors`. Code: `lib/manage.js` (API wrapper, `fieldErrors`, plain `check` helpers), `components/admin/Kit.jsx` (FormField, Toggle, native `<dialog>` Dialog and ConfirmDialog), `pages/admin/`. Forms check the same rules as the backend first (required fields, fee not negative, location for offline and hybrid, seats not below paid, end time after start time, at least one batch day) and show any server error under the matching field. Deleting protected items shows the 409 advice in the confirm dialog.
 
 ## Phase 3: Enrollments & payments dashboard
 - [ ] Staff endpoint: list/filter enrollments (by status, course, date range).
