@@ -18,6 +18,9 @@ A website to sell online and offline classes across multiple subjects. Students 
 ## Frontend highlights
 Ink and emerald design (one accent, light and dark) with purposeful motion that respects reduced-motion settings, self-hosted fonts, instant course filters (subject, format, price, seats, sort), compare up to 3 courses, saved courses, recently viewed, next-class card, lesson progress and calendar export. Saved courses, recently viewed and lesson progress are stored in your browser only.
 
+## Images
+Course covers are typographic tiles and instructor avatars are monograms until real images exist. The frontend already uses `image_url` (course) and `photo_url` (instructor) when the API returns them. The backend has no upload field for these yet.
+
 ## SEO
 Each page sets its own title, description, canonical link, sharing tags and (for courses, instructors and the home page) schema.org data. Private pages are marked noindex. `robots.txt` is generated at build time and `/sitemap.xml` comes from the backend. Set `VITE_SITE_URL` (frontend build) and `SITE_URL` (backend) to your real domain.
 

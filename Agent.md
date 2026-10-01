@@ -122,6 +122,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | SEO pass: `useTitle(title, opts)` now sets title, meta description, canonical (query strings ignored), Open Graph and Twitter tags, robots (noindex on private, login, compare, saved and 404 pages) and JSON-LD (Organization + WebSite on Home, Course on course pages, Person on instructor and portfolio pages). Added share image `public/og-image.png`, `robots.txt` (built from `frontend/robots.txt.template`), dynamic `/sitemap.xml` from the database (backend, tested), and `FORCE_HTTPS` settings (redirect, HSTS, secure cookies). Browser checks on 8 public and 11 private pages, a 23-page link crawl (0 broken), LCP about 1.3s and CLS under 0.02 locally. 58 backend tests pass. |
 | 2026-10-01 | Emails: welcome email on registration and payment receipt email on the first successful payment (HTML + plain text, shared layout in `accounts/emails.py`, receipt in `enrollments/emails.py`, sent from `services.mark_paid` so webhook retries never send twice). Sending never raises, so a mail outage cannot break signup or payment. 9 new tests (67 total pass on MariaDB); real flow checked end to end with console emails. |
 | 2026-10-01 | Redesign to stop reading as AI-made, using `web-dev-skills/design-taste` (look chosen by the owner: ink and emerald). New tokens (oklch, one accent, light and dark), self-hosted Geist and Bricolage Grotesque, Phosphor icons, Motion library. Removed the purple/coral gradients, floating shapes, emoji, confetti, stat tiles, three-equal-card grids and Google Fonts. Home rebuilt (asymmetric hero with a live course preview, typographic subject rows, one large plus two small featured courses, scroll-linked steps), ruled-list layouts for About, FAQ, Instructors and Portfolio, typographic course covers, animated filters, nav underline, compare bar and enrollment check. Route-level code splitting, FAQPage schema, new share image. Pre-flight 0 violations; axe 0 violations on public pages (light, dark, 390px) and student pages; 67 backend tests pass. |
+| 2026-10-01 | Image generation attempted and paused by the owner. Higgsfield has 0 credits (free plan); Canva generates images but only returns 199px previews to the workspace, so nothing usable was saved. No code changed. Covers stay typographic and avatars stay monograms. To resume: add Higgsfield credits (nano_banana is the budget model) or export full-size images from Canva, then add an image upload field on the backend and serve `image_url` / `photo_url`. Use real photos for instructors, not generated people. |
 
 ## Status
 
@@ -144,7 +145,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 
 **Next (pick in this order unless told otherwise)**
 1. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
-2. Course images and instructor photos (file uploads)
+2. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
 3. Production setup: Gunicorn, environment variables, static files, deployment
 
 **Known gaps**
