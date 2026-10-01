@@ -20,6 +20,7 @@ export default function Footer() {
         <ul className={col}>
           <li className="font-semibold text-slate-900">Company</li>
           <li><Link to="/about" className="hover:text-slate-900">About us</Link></li>
+          <li><Link to="/portfolio" className="hover:text-slate-900">About the developer</Link></li>
           <li><Link to="/contact" className="hover:text-slate-900">Contact</Link></li>
         </ul>
         <ul className={col}>

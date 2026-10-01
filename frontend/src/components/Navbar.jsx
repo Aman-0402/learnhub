@@ -27,6 +27,7 @@ export default function Navbar() {
       <NavLink to="/instructors" className={link} onClick={close}>Instructors</NavLink>
       <NavLink to="/saved" className={link} onClick={close}>Saved{saved > 0 && <span className="ml-1.5 rounded-full bg-coral px-1.5 py-0.5 text-xs font-bold text-white"><span className="sr-only"> </span>{saved}</span>}</NavLink>
       <NavLink to="/about" className={link} onClick={close}>About</NavLink>
+      <NavLink to="/portfolio" className={link} onClick={close}>Portfolio</NavLink>
       <NavLink to="/faq" className={link} onClick={close}>FAQ</NavLink>
       <NavLink to="/contact" className={link} onClick={close}>Contact</NavLink>
     </>

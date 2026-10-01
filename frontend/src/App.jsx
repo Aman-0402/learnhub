@@ -22,6 +22,7 @@ import Learn from "./pages/Learn.jsx";
 import Payments from "./pages/Payments.jsx";
 import Receipt from "./pages/Receipt.jsx";
 import Profile from "./pages/Profile.jsx";
+import Portfolio from "./pages/Portfolio.jsx";
 import Saved from "./pages/Saved.jsx";
 import Compare from "./pages/Compare.jsx";
 import { useTitle } from "./lib/hooks.js";
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/compare" element={<Compare />} />
           <Route path="/instructors" element={<Instructors />} />
           <Route path="/instructors/:slug" element={<InstructorDetail />} />
+          <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<Faq />} />

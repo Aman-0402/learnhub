@@ -82,6 +82,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Known small risk: seats are checked before the order is created, not at capture time, so a last-seat race can oversell. Revisit when going live.
 - MySQL cannot create conditional unique constraints, so "one paid enrollment per student and course" is enforced in `PayView` (and tested). Check `models.W036` is silenced for this reason.
 - `mysqlclient` needs system headers, so the project uses the pure-Python `PyMySQL` driver (installed as MySQLdb in `config/settings.py`).
+- Portfolio page: content is in `pages/Portfolio.jsx`; the email in `OWNER` (`lib/site.js`) is a placeholder until the owner sets it. LearnHub itself is not linked there because its repo is private.
 - Frontend contact details live in `frontend/src/lib/site.js` and are placeholders until the owner fills them in.
 - Dark mode: toggled in the navbar, stored in localStorage (`theme`), applied before first paint by a script in `index.html`. It works by remapping colour variables in `index.css` (`.dark { ... }`), so components use semantic classes: `bg-surface`, `text-brand`, `text-brand-strong`. Do not hard-code `bg-white` or `text-brand-600`.
 - Data pages use `useFetch` (lib/hooks.js) for loading skeletons, error states with "Try again", and 404 handling. Every page calls `useTitle`.
@@ -106,6 +107,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Backend for the two sample features: password reset by email (request + confirm, console email in dev, SMTP via env, rate limited) and batches (model, endpoint, batch on enrollment with seat limits, admin, seed data). Frontend switches turned on. 57 backend tests pass on MySQL; real reset email, real batches, seat limits and accessibility verified in a browser against the live backend. |
 | 2026-10-01 | Razorpay structure added (off by default): `RazorpayGateway`, signature verification, webhook endpoint, `gateway_order_id`, `/api/payments/config/`, frontend `lib/razorpay.js` and Checkout hook. 38 backend tests pass; mock and stubbed-Razorpay checkout verified in a browser. Not yet tested with real Razorpay keys. |
 | 2026-10-01 | Frontend upgrade (playful look, real API only): purple/coral/sun/mint palette and Fredoka + Nunito fonts, colourful Home (stats, subject tiles, how it works, instructors), Courses page with instant filters (subject chips, format, price, seats available, sort, pagination, URL synced), compare (up to 3) and Saved pages, recently viewed, similar courses, next-class card, lesson checkboxes with progress bars, add-to-calendar (.ics), confetti on enrollment, scroll-reveal and page fade (respect reduced motion). axe-core 0 violations on all pages, light and dark; 57 backend tests pass; flow verified in a browser. |
+| 2026-10-01 | Added the `/portfolio` page (About me, roles, skills, projects, contact), linked from the navbar and footer. Owner details live in `OWNER` in `frontend/src/lib/site.js`. axe-core 0 violations in light and dark, no horizontal scroll at 390px. |
 
 ## Status
 
