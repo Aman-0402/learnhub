@@ -1,3 +1,4 @@
+import { SITE } from "./site.js";
 import { useEffect, useState, useCallback } from "react";
 
 /** Load data with loading / error / retry handling. `fn` re-runs whenever `deps` change. */
@@ -19,10 +20,49 @@ export function useFetch(fn, deps = []) {
 }
 
 /** Sets the browser tab title and announces page changes to screen readers. */
-export function useTitle(title) {
+const DEFAULT_TITLE = "LearnHub: Online and Offline Courses";
+const DEFAULT_DESC = "Join live online and offline classes in programming, English, maths, science and more. Pick a batch, pay the fee and start learning with LearnHub.";
+
+function upsertMeta(attr, key, content) {
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
+  el.setAttribute("content", content);
+}
+
+/**
+ * Sets the page title and every search and sharing tag for the current page.
+ * opts: description, image (absolute or site-relative URL), noindex (private pages), jsonLd (schema.org object), type ("website" | "article").
+ */
+export function useTitle(title, opts = {}) {
+  const { description = DEFAULT_DESC, image = SITE.image, noindex = false, jsonLd = null, type = "website" } = opts;
+  const ld = jsonLd ? JSON.stringify(jsonLd) : "";
   useEffect(() => {
-    document.title = title ? `${title} | LearnHub` : "LearnHub: Online and Offline Courses";
-  }, [title]);
+    const full = title ? `${title} | ${SITE.name}` : DEFAULT_TITLE;
+    const url = SITE.url + window.location.pathname;
+    const img = image.startsWith("http") ? image : SITE.url + image;
+    const desc = description.length > 158 ? `${description.slice(0, 155).trimEnd()}...` : description;
+    document.title = full;
+    upsertMeta("name", "description", desc);
+    upsertMeta("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
+    upsertMeta("property", "og:title", full);
+    upsertMeta("property", "og:description", desc);
+    upsertMeta("property", "og:type", type);
+    upsertMeta("property", "og:url", url);
+    upsertMeta("property", "og:site_name", SITE.name);
+    upsertMeta("property", "og:image", img);
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:title", full);
+    upsertMeta("name", "twitter:description", desc);
+    upsertMeta("name", "twitter:image", img);
+    let link = document.head.querySelector('link[rel="canonical"]');
+    if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.appendChild(link); }
+    link.href = url; // query strings (filters, pages) are left out on purpose
+    let script = document.getElementById("seo-jsonld");
+    if (ld) {
+      if (!script) { script = document.createElement("script"); script.id = "seo-jsonld"; script.type = "application/ld+json"; document.head.appendChild(script); }
+      script.textContent = ld;
+    } else script?.remove();
+  }, [title, description, image, noindex, ld, type]);
 }
 
 const reducedMotion = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;

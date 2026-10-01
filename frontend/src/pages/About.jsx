@@ -14,7 +14,7 @@ const steps = [
 ];
 
 export default function About() {
-  useTitle("About");
+  useTitle("About", { description: "LearnHub helps students learn the subjects they care about, online, in person or both, with clear fees and small batches." });
   return (
     <div className="space-y-14">
       <PageHeader title="About LearnHub" subtitle="We help students learn the subjects they care about, in the format that suits them." />

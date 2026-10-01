@@ -24,7 +24,7 @@ const bySort = {
 };
 
 export default function Courses() {
-  useTitle("Courses");
+  useTitle("Courses", { description: "Browse online, offline and hybrid courses. Filter by subject, format, price and start date, then enroll in the batch that suits you." });
   const [params, setParams] = useSearchParams();
   const get = (k) => params.get(k) || "";
   const q = get("q"), subject = get("subject"), mode = get("mode"), price = get("price"), sort = get("sort") || "new";

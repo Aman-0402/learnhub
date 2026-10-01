@@ -10,7 +10,7 @@ export default function Receipt() {
   const { reference } = useParams();
   const { user } = useAuth();
   const { data, error, status, loading, reload } = useFetch(() => api("/my-courses/").then((l) => l.find((e) => e.reference === reference) || Promise.reject(Object.assign(new Error("We could not find that receipt."), { status: 404 }))), [reference]);
-  useTitle("Receipt");
+  useTitle("Receipt", { noindex: true });
   if (loading) return <DetailSkeleton />;
   if (error) return <ErrorState message={error} status={status} onRetry={reload} />;
 

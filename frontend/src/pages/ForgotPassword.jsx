@@ -7,7 +7,7 @@ import { SampleNote } from "../components/Batches.jsx";
 import { Notice } from "../components/PageHeader.jsx";
 
 export default function ForgotPassword() {
-  useTitle("Forgot password");
+  useTitle("Forgot password", { noindex: true });
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(null);
   const [error, setError] = useState("");

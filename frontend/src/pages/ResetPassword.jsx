@@ -7,7 +7,7 @@ import { SampleNote } from "../components/Batches.jsx";
 import { Notice } from "../components/PageHeader.jsx";
 
 export default function ResetPassword() {
-  useTitle("Reset password");
+  useTitle("Reset password", { noindex: true });
   const [params] = useSearchParams();
   const uid = params.get("uid"), token = params.get("token");
   const [f, setF] = useState({ password: "", confirm: "" });

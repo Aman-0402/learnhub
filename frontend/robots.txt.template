@@ -1,0 +1,20 @@
+# robots.txt for LearnHub. __SITE_URL__ is replaced at build time (set VITE_SITE_URL).
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /my-courses
+Disallow: /learn/
+Disallow: /checkout/
+Disallow: /payments
+Disallow: /receipts/
+Disallow: /profile
+Disallow: /saved
+Disallow: /compare
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: __SITE_URL__/sitemap.xml

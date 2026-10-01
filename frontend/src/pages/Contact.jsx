@@ -6,7 +6,7 @@ import { inputCls } from "../components/AuthForm.jsx";
 import { SITE } from "../lib/site.js";
 
 export default function Contact() {
-  useTitle("Contact");
+  useTitle("Contact", { description: "Questions about a course, batch or payment? Send LearnHub a message or find our contact details and opening hours." });
   const [f, setF] = useState({ name: "", email: "", message: "" });
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);

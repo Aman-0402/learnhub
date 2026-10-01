@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
 import { useFetch, useTitle } from "../lib/hooks.js";
+import { SITE } from "../lib/site.js";
 import { inr } from "../components/CourseCard.jsx";
 import { Card } from "../components/PageHeader.jsx";
 import { Avatar } from "../components/Media.jsx";
@@ -9,7 +10,11 @@ import { DetailSkeleton, ErrorState } from "../components/States.jsx";
 export default function InstructorDetail() {
   const { slug } = useParams();
   const { data: p, error, status, loading, reload } = useFetch(() => api(`/instructors/${slug}/`, { auth: false }), [slug]);
-  useTitle(p?.name || "Instructor");
+  useTitle(p?.name || "Instructor", p ? {
+    description: (p.bio || p.headline || `${p.name} teaches at ${SITE.name}.`).replace(/\s+/g, " ").slice(0, 200),
+    type: "profile",
+    jsonLd: { "@context": "https://schema.org", "@type": "Person", name: p.name, ...(p.headline && { jobTitle: p.headline }), url: `${SITE.url}/instructors/${p.slug}`, worksFor: { "@type": "EducationalOrganization", name: SITE.name } },
+  } : { noindex: true });
   if (loading) return <DetailSkeleton />;
   if (error) return <ErrorState message={status === 404 ? "This instructor profile does not exist." : error} status={status} onRetry={reload} />;
   return (

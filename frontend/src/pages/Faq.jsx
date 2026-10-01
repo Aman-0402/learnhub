@@ -13,7 +13,7 @@ const FAQS = [
 ];
 
 export default function Faq() {
-  useTitle("FAQ");
+  useTitle("FAQ", { description: "Answers to common questions about enrolling, paying, batches, online and offline classes at LearnHub." });
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Frequently asked questions" />

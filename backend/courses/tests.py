@@ -71,3 +71,26 @@ class LessonAccessTests(APITestCase):
     def test_unknown_or_unpublished_course_404(self):
         self.client.force_authenticate(self.staff)
         self.assertEqual(self.client.get("/api/courses/nope/lessons/").status_code, 404)
+
+
+class SitemapTests(APITestCase):
+    """sitemap.xml lists public pages and published courses only."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+
+    def test_sitemap_lists_public_pages_and_published_courses(self):
+        subject = Subject.objects.create(name="SEO Subject")
+        Course.objects.create(title="Visible SEO Course", subject=subject, mode="online", description="d", fee=100, duration_weeks=2)
+        Course.objects.create(title="Hidden SEO Course", subject=subject, mode="online", description="d", fee=100, duration_weeks=2, is_published=False)
+        res = self.client.get("/sitemap.xml")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res["Content-Type"], "application/xml")
+        body = res.content.decode()
+        self.assertIn("/courses/visible-seo-course</loc>", body)
+        self.assertNotIn("hidden-seo-course", body)
+        for path in ("/courses<", "/about<", "/portfolio<", "/faq<"):
+            self.assertIn(path, body)
+        self.assertNotIn("/dashboard", body)
+        self.assertNotIn("/checkout", body)

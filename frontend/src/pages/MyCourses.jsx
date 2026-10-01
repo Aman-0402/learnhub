@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader.jsx";
 import { ErrorState, ListSkeleton } from "../components/States.jsx";
 
 export default function MyCourses() {
-  useTitle("My courses");
+  useTitle("My courses", { noindex: true });
   const { data: items, error, loading, reload } = useFetch(() => api("/my-courses/"));
   return (
     <div>

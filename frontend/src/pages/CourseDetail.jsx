@@ -10,13 +10,24 @@ import { DetailSkeleton, ErrorState } from "../components/States.jsx";
 import CourseCard from "../components/CourseCard.jsx";
 import { HeartButton } from "../components/Fun.jsx";
 import { fetchAllCourses } from "../lib/catalog.js";
+import { SITE } from "../lib/site.js";
 import { useRecent, useWishlist } from "../lib/store.js";
 
 export default function CourseDetail() {
   const { slug } = useParams();
   const nav = useNavigate();
   const { data: course, error, status, loading, reload } = useFetch(() => api(`/courses/${slug}/`, { auth: false }), [slug]);
-  useTitle(course?.title || "Course");
+  const toPlain = (t = "") => t.replace(/\s+/g, " ").trim();
+  useTitle(course?.title || "Course", course ? {
+    description: toPlain(course.description) || `${course.title}: a ${course.duration_weeks}-week ${course.mode_display.toLowerCase()} course.`,
+    jsonLd: {
+      "@context": "https://schema.org", "@type": "Course", name: course.title, description: toPlain(course.description),
+      provider: { "@type": "Organization", name: SITE.name, sameAs: SITE.url },
+      ...(course.instructor && { instructor: { "@type": "Person", name: course.instructor } }),
+      offers: { "@type": "Offer", category: "Paid", price: String(course.fee), priceCurrency: "INR", url: `${SITE.url}/courses/${course.slug}`, availability: course.seats_left === 0 ? "https://schema.org/SoldOut" : "https://schema.org/InStock" },
+      hasCourseInstance: { "@type": "CourseInstance", courseMode: course.mode === "online" ? "online" : course.mode === "offline" ? "onsite" : ["online", "onsite"], ...(course.start_date && { startDate: course.start_date }), ...(course.location && { location: course.location }) },
+    },
+  } : { noindex: true });
   const [batches, setBatches] = useState([]);
   const [batch, setBatch] = useState("");
   const wish = useWishlist();

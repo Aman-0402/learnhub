@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { api } from "../lib/api.js";
 import { fetchAllCourses } from "../lib/catalog.js";
 import { useFetch, useTitle } from "../lib/hooks.js";
+import { SITE } from "../lib/site.js";
 import { CHIP_TINTS } from "../lib/colors.js";
 import CourseCard from "../components/CourseCard.jsx";
 import { Avatar } from "../components/Media.jsx";
@@ -28,7 +29,12 @@ function Shapes() {
 }
 
 export default function Home() {
-  useTitle("");
+  useTitle("", {
+    jsonLd: { "@context": "https://schema.org", "@graph": [
+      { "@type": "EducationalOrganization", name: SITE.name, url: SITE.url, logo: `${SITE.url}/og-image.png`, description: "Online and offline classes across many subjects." },
+      { "@type": "WebSite", name: SITE.name, url: SITE.url },
+    ] },
+  });
   const courses = useFetch(() => fetchAllCourses());
   const subjects = useFetch(() => api("/subjects/", { auth: false }));
   const instructors = useFetch(() => api("/instructors/", { auth: false }));

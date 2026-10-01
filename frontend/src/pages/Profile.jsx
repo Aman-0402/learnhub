@@ -32,7 +32,7 @@ function PasswordCard() {
 }
 
 export default function Profile() {
-  useTitle("Profile");
+  useTitle("Profile", { noindex: true });
   const { user, setUser } = useAuth();
   const [form, setForm] = useState({ full_name: user.full_name, phone: user.phone || "" });
   const [msg, setMsg] = useState(null);

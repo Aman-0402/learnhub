@@ -9,7 +9,7 @@ import { ErrorState, ListSkeleton } from "../components/States.jsx";
 const date = (d) => (d ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { dateStyle: "medium" }) : "To be announced");
 
 export default function Compare() {
-  useTitle("Compare courses");
+  useTitle("Compare courses", { noindex: true });
   const cmp = useCompare();
   const { data, error, loading, reload } = useFetch(() => fetchAllCourses());
   const courses = data ? cmp.slugs.map((s) => data.find((c) => c.slug === s)).filter(Boolean) : [];

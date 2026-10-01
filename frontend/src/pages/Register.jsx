@@ -5,7 +5,7 @@ import { useTitle } from "../lib/hooks.js";
 import { AuthCard, Field, submitCls } from "../components/AuthForm.jsx";
 
 export default function Register() {
-  useTitle("Sign up");
+  useTitle("Sign up", { noindex: true });
   const { register } = useAuth();
   const nav = useNavigate();
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", password: "" });

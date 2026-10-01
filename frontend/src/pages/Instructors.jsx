@@ -6,7 +6,7 @@ import { Avatar } from "../components/Media.jsx";
 import { CardGridSkeleton, ErrorState } from "../components/States.jsx";
 
 export default function Instructors() {
-  useTitle("Instructors");
+  useTitle("Instructors", { description: "Meet the instructors teaching LearnHub courses, with their subjects and the courses they lead." });
   const { data, error, loading, reload } = useFetch(() => api("/instructors/", { auth: false }));
   return (
     <div>

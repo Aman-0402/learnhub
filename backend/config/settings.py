@@ -136,3 +136,16 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "LearnHub <no-reply@learnhu
 # Where reset links point (the React app) and how long they stay valid.
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 2  # seconds
+
+# Public address of the site, used in sitemap.xml. Defaults to FRONTEND_URL; set SITE_URL if the public address differs.
+SITE_URL = os.getenv("SITE_URL", FRONTEND_URL).rstrip("/")
+
+# HTTPS. Off by default so local development works. In production set FORCE_HTTPS=1 (behind a proxy that sets X-Forwarded-Proto).
+FORCE_HTTPS = os.getenv("FORCE_HTTPS", "0") == "1"
+if FORCE_HTTPS:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

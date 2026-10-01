@@ -11,7 +11,7 @@ import { Notice } from "../components/PageHeader.jsx";
 import { DetailSkeleton, ErrorState } from "../components/States.jsx";
 
 export default function Checkout() {
-  useTitle("Checkout");
+  useTitle("Checkout", { noindex: true });
   const { slug } = useParams();
   const batchId = useSearchParams()[0].get("batch");
   const nav = useNavigate();

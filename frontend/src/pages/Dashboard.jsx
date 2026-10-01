@@ -25,7 +25,7 @@ function LessonProgress({ slug, prog }) {
 const fmt = (d) => new Date(d).toLocaleDateString("en-IN", { dateStyle: "medium" });
 
 export default function Dashboard() {
-  useTitle("Dashboard");
+  useTitle("Dashboard", { noindex: true });
   const { user } = useAuth();
   const just = useLocation().state?.justEnrolled;
   const prog = useProgress();

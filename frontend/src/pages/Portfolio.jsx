@@ -27,7 +27,11 @@ const PROJECTS = [
 const H = ({ id, children }) => <h2 id={id} className="mb-5 font-display text-2xl font-bold">{children}</h2>;
 
 export default function Portfolio() {
-  useTitle("About me");
+  useTitle("About me", {
+    description: "Aman Raj is a Full-Stack Developer and IT Trainer in Vadodara building React and Django products and teaching web development and AI.",
+    type: "profile",
+    jsonLd: { "@context": "https://schema.org", "@type": "Person", name: OWNER.name, jobTitle: "Full-Stack Developer and IT Trainer", address: { "@type": "PostalAddress", addressLocality: "Vadodara", addressRegion: "Gujarat", addressCountry: "IN" }, sameAs: [OWNER.github] },
+  });
   return (
     <div className="space-y-14">
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand-600 via-[#8b5cf6] to-coral px-6 py-12 text-white sm:px-12">

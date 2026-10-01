@@ -7,7 +7,7 @@ import { EmptyState } from "../components/Fun.jsx";
 import { CardGridSkeleton, ErrorState } from "../components/States.jsx";
 
 export default function Saved() {
-  useTitle("Saved courses");
+  useTitle("Saved courses", { noindex: true });
   const wish = useWishlist();
   const { data, error, loading, reload } = useFetch(() => fetchAllCourses());
   const courses = data ? wish.slugs.map((s) => data.find((c) => c.slug === s)).filter(Boolean) : [];

@@ -1,6 +1,9 @@
 // Edit these before launch. They are placeholders, not real contact details.
 export const SITE = {
   name: "LearnHub",
+  // The public address of the site (no trailing slash). Used for canonical links and sharing tags. Set VITE_SITE_URL when you deploy.
+  url: (import.meta.env.VITE_SITE_URL || "https://learnhub.example").replace(/\/$/, ""),
+  image: "/og-image.png",
   email: "hello@learnhub.example",
   phone: "+91 00000 00000",
   address: "Your centre address, Vadodara, Gujarat",

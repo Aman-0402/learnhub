@@ -26,7 +26,7 @@ export default function Learn() {
     const lessons = enrollment ? await api(`/courses/${slug}/lessons/`) : [];
     return { enrollment, lessons };
   }, [slug]);
-  useTitle(data?.enrollment?.course.title || "Course");
+  useTitle(data?.enrollment?.course.title || "Course", { noindex: true });
 
   if (loading) return <DetailSkeleton />;
   if (error) return <ErrorState message={error} status={status} onRetry={reload} />;

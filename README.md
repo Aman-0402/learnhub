@@ -18,6 +18,9 @@ A website to sell online and offline classes across multiple subjects. Students 
 ## Frontend highlights
 Playful colourful design with dark mode, instant course filters (subject, format, price, seats, sort), compare up to 3 courses, saved courses, recently viewed, next-class card, lesson progress and calendar export. Saved courses, recently viewed and lesson progress are stored in your browser only.
 
+## SEO
+Each page sets its own title, description, canonical link, sharing tags and (for courses, instructors and the home page) schema.org data. Private pages are marked noindex. `robots.txt` is generated at build time and `/sitemap.xml` comes from the backend. Set `VITE_SITE_URL` (frontend build) and `SITE_URL` (backend) to your real domain.
+
 ## Run locally
 
 ### Backend

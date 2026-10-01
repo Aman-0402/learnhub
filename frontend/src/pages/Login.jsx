@@ -5,7 +5,7 @@ import { useTitle } from "../lib/hooks.js";
 import { AuthCard, Field, submitCls } from "../components/AuthForm.jsx";
 
 export default function Login() {
-  useTitle("Log in");
+  useTitle("Log in", { noindex: true });
   const { login } = useAuth();
   const nav = useNavigate();
   const from = useLocation().state?.from || "/dashboard";

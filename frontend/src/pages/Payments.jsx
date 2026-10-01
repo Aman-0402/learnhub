@@ -6,7 +6,7 @@ import PageHeader, { Card } from "../components/PageHeader.jsx";
 import { ErrorState, ListSkeleton } from "../components/States.jsx";
 
 export default function Payments() {
-  useTitle("Payment history");
+  useTitle("Payment history", { noindex: true });
   const { data: items, error, loading, reload } = useFetch(() => api("/my-courses/"));
   const total = (items || []).reduce((s, e) => s + Number(e.amount), 0);
   const th = "px-5 py-3 font-medium";
