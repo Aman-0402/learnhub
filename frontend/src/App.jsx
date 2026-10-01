@@ -47,13 +47,17 @@ function NotFound() {
 
 export default function App() {
   const { pathname } = useLocation();
+  // Keep the admin shell (sidebar, layout) mounted across its own sub-routes: keying by
+  // the full pathname would remount AdminLayout on every sidebar click, re-triggering its
+  // lazy-load Suspense fallback and feeling like a full page reload.
+  const pageKey = pathname.startsWith("/manage") ? "/manage" : pathname;
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <a href="#main" className="sr-only z-50 btn btn-primary focus:not-sr-only focus:absolute focus:left-4 focus:top-4">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
       <main id="main" tabIndex={-1} className="shell flex-1 py-8">
-        <div key={pathname} className="page-in">
+        <div key={pageKey} className="page-in">
         <Suspense fallback={<div role="status" aria-busy="true" className="min-h-[60dvh]"><span className="sr-only">Loading</span></div>}>
         <Routes>
           <Route path="/" element={<Home />} />

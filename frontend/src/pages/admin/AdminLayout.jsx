@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { motion } from "motion/react";
 import { SquaresFour, ArrowLeft, BookOpen, Tag, ChalkboardTeacher, Receipt, Envelope, Users } from "@phosphor-icons/react";
@@ -41,7 +42,11 @@ export default function AdminLayout() {
           <NavLink to="/" className={item}><ArrowLeft size={20} aria-hidden="true" />Back to site</NavLink>
         </nav>
       </aside>
-      <section aria-label="Admin content" className="min-w-0"><Outlet /></section>
+      <section aria-label="Admin content" className="min-w-0">
+        <Suspense fallback={<div role="status" aria-busy="true" className="min-h-[40dvh]"><span className="sr-only">Loading</span></div>}>
+          <Outlet />
+        </Suspense>
+      </section>
     </div>
   );
 }
