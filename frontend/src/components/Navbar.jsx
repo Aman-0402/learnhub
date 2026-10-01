@@ -35,10 +35,10 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 print:hidden border-b-2 border-brand-100 bg-surface/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+      <div className="shell flex items-center justify-between gap-4 py-3">
         <Link to="/" className="font-display text-2xl font-bold text-brand"><span aria-hidden="true" className="mr-1.5 inline-block animate-wiggle">🎓</span>{SITE.name}</Link>
-        <nav aria-label="Main" className="hidden items-center gap-6 md:flex">{items}</nav>
-        <div className="hidden items-center gap-3 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">{items}</nav>
+        <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle />
           {user ? (
             <>
@@ -53,7 +53,7 @@ export default function Navbar() {
             </>
           )}
         </div>
-        <div className="flex items-center gap-1 md:hidden"><ThemeToggle />
+        <div className="flex items-center gap-1 lg:hidden"><ThemeToggle />
         <button aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className="rounded-lg p-2 text-slate-700">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -61,7 +61,7 @@ export default function Navbar() {
         </button></div>
       </div>
       {open && (
-        <div id="mobile-menu" className="flex flex-col gap-4 border-t border-slate-200 px-4 py-4 md:hidden">
+        <div id="mobile-menu" className="shell flex flex-col gap-4 border-t border-slate-200 py-4 lg:hidden">
           {items}
           <div className="h-px bg-slate-200" />
           {user ? (

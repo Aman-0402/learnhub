@@ -41,7 +41,7 @@ export default function App() {
       <a href="#main" className="sr-only z-50 rounded-lg bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
-      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 outline-none">
+      <main id="main" tabIndex={-1} className="shell flex-1 py-8 outline-none">
         <div key={pathname} className="animate-fade-up">
         <Routes>
           <Route path="/" element={<Home />} />

@@ -19,7 +19,7 @@ export default function Saved() {
       {error && <ErrorState message={error} onRetry={reload} />}
       {data && (courses.length === 0
         ? <EmptyState title="Nothing saved yet" action={<Link to="/courses" className="rounded-full bg-brand-600 px-5 py-2 font-bold text-white hover:bg-brand-700">Browse courses</Link>}>Tap the heart on a course to keep it here.</EmptyState>
-        : <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{courses.map((c) => <CourseCard key={c.id} course={c} as="h2" compare />)}</div>)}
+        : <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{courses.map((c) => <CourseCard key={c.id} course={c} as="h2" compare />)}</div>)}
     </div>
   );
 }

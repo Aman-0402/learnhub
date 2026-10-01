@@ -108,7 +108,7 @@ export default function Courses() {
               Try a different search or remove a filter.
             </EmptyState>
           ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{shown.map((c) => <CourseCard key={c.id} course={c} as="h2" compare />)}</div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{shown.map((c) => <CourseCard key={c.id} course={c} as="h2" compare />)}</div>
           )}
           {pages > 1 && (
             <nav aria-label="Pagination" className="mt-8 flex items-center justify-center gap-3">
@@ -129,7 +129,7 @@ export default function Courses() {
 
       {cmp.slugs.length > 0 && (
         <div role="region" aria-label="Compare courses" className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-brand-100 bg-surface/95 px-4 py-3 shadow-2xl backdrop-blur">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
+          <div className="shell flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-bold">{cmp.slugs.length} of 3 selected to compare</p>
             <div className="flex items-center gap-3">
               <button onClick={cmp.clear} className="text-sm font-bold text-slate-600 hover:text-slate-900">Clear</button>

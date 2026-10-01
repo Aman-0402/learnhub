@@ -5,7 +5,7 @@ const col = "space-y-2 text-sm text-slate-600";
 export default function Footer() {
   return (
     <footer className="print:hidden mt-8 border-t-4 border-brand-600 bg-brand-50">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="shell grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="font-display text-2xl font-bold text-brand">{SITE.name}</p>
           <p className="mt-2 text-sm text-slate-600">Online and offline classes across every subject.</p>

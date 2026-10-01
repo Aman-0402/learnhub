@@ -92,6 +92,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Playful redesign: colours are tokens in `index.css` (`brand`, `coral`, `sun`, `mint`, `sky`, plus semantic `surface`, `brand`, `brand-strong`). On white pills and buttons over gradients use a fixed dark text colour (not `text-slate-900` or `text-brand-strong`, which dark mode remaps to light). Fonts load from Google Fonts (Fredoka for headings, Nunito for body).
 - Course list: the Courses, Home, Saved and Compare pages load every course once through `lib/catalog.js` (`fetchAllCourses`, pages through `/api/courses/`) and filter in the browser. Fine for a small catalog; move filtering back to the API if the catalog grows to hundreds.
 - Device-only data (`lib/store.js`): saved courses, recently viewed, compare picks (session only) and lesson completion live in this browser's storage, are labelled "saved on this device", and are not linked to the account. A backend progress endpoint would be needed to sync them.
+- Page width: use the `.shell` class (index.css) for any full-width container; do not hard-code `max-w-6xl`. Max width is 1450px.
 - Stretched card links: interactive controls on a `CourseCard` (heart, compare checkbox) need `relative z-10` or the title link's overlay covers them.
 - Admin login is by email (`USER_NAME_FIELD=email`). Create the admin with `python manage.py createsuperuser`; credentials are never committed.
 
@@ -108,6 +109,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Razorpay structure added (off by default): `RazorpayGateway`, signature verification, webhook endpoint, `gateway_order_id`, `/api/payments/config/`, frontend `lib/razorpay.js` and Checkout hook. 38 backend tests pass; mock and stubbed-Razorpay checkout verified in a browser. Not yet tested with real Razorpay keys. |
 | 2026-10-01 | Frontend upgrade (playful look, real API only): purple/coral/sun/mint palette and Fredoka + Nunito fonts, colourful Home (stats, subject tiles, how it works, instructors), Courses page with instant filters (subject chips, format, price, seats available, sort, pagination, URL synced), compare (up to 3) and Saved pages, recently viewed, similar courses, next-class card, lesson checkboxes with progress bars, add-to-calendar (.ics), confetti on enrollment, scroll-reveal and page fade (respect reduced motion). axe-core 0 violations on all pages, light and dark; 57 backend tests pass; flow verified in a browser. |
 | 2026-10-01 | Added the `/portfolio` page (About me, roles, skills, projects, contact), linked from the navbar and footer. Owner details live in `OWNER` in `frontend/src/lib/site.js`. axe-core 0 violations in light and dark, no horizontal scroll at 390px. |
+| 2026-10-01 | Layout: content width capped at 1450px through one `.shell` class (navbar, main, footer, compare bar) with side padding that grows with the screen; course grids go to 4 columns from 1280px; navbar switches to the mobile menu below 1024px (it overflowed at tablet widths). Checked at 360, 768, 1024, 1366, 1440, 1920 and 2560px: no horizontal scroll; axe-core clean at 360 and 1920. |
 
 ## Status
 

@@ -63,6 +63,11 @@
   --color-sky-50: #082f49;     --color-sky-700: #7dd3fc;
 }
 
+@layer components {
+  /* Page container: fills the screen up to 1450px, centred, with side padding that grows with the viewport. */
+  .shell { width: 100%; max-width: 1450px; margin-inline: auto; padding-inline: clamp(1rem, 3vw, 2.5rem); }
+}
+
 @layer base {
   body { @apply bg-slate-50 text-slate-900 antialiased; font-family: var(--font-sans); }
   h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
