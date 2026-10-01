@@ -2,7 +2,7 @@ import { useTitle } from "../lib/hooks.js";
 import { OWNER } from "../lib/site.js";
 import { Avatar } from "../components/Media.jsx";
 import { Reveal } from "../components/Fun.jsx";
-import { ArrowUpRight, GithubLogo, EnvelopeSimple, LinkedinLogo, Code } from "@phosphor-icons/react";
+import { ArrowUpRight, GithubLogo, EnvelopeSimple, LinkedinLogo, Code, Users, Certificate, ShieldCheck, TestTube, ClockCountdown } from "@phosphor-icons/react";
 
 const ROLES = [
   ["AI Trainer", "CodedevH · Allenhouse Institute of Technology & Business School", "Aug 2026 to now", "Delivering applied AI training and developing AI models, translating model-building workflows into structured learning material."],
@@ -49,6 +49,14 @@ const CERTIFICATIONS = [
   "Oracle Agentic AI Certified",
 ];
 
+const ACHIEVEMENTS = [
+  [Users, "2000+", "Students trained across leading universities"],
+  [ClockCountdown, "3+ years", "Combined industry and training experience"],
+  [Certificate, "10", "Certifications earned, including AWS and Oracle"],
+  [ShieldCheck, "4", "Production platforms shipped end to end"],
+  [TestTube, "186", "Automated tests written for Certibyt alone"],
+];
+
 const H = ({ id, children }) => <h2 id={id} className="mb-6 text-3xl font-semibold sm:text-4xl">{children}</h2>;
 
 export default function Portfolio() {
@@ -75,6 +83,23 @@ export default function Portfolio() {
         <section aria-labelledby="about">
           <H id="about">About me</H>
           <p className="max-w-2xl text-lg text-slate-700">I am from Bokaro Steel City and now based in Vadodara. I hold a B.Tech in Computer Science and Engineering from Sambalpur University Institute of Information Technology. Over 3 years of combined industry and training experience: designing full-stack, AI/ML and cloud curricula for 2000+ students at leading universities, backed by real-world development across MERN, Django and Generative AI systems.</p>
+        </section>
+
+        <section aria-labelledby="achievements">
+          <H id="achievements">Achievements</H>
+          <ul className="border-t border-slate-200">
+            {ACHIEVEMENTS.map(([Icon, stat, label], i) => (
+              <Reveal as="li" key={label} delay={i * 60} className="flex items-center gap-5 border-b border-slate-200 py-5">
+                <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-300 text-brand-strong">
+                  <Icon size={22} weight="duotone" />
+                </span>
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="num text-2xl font-semibold">{stat}</span>
+                  <span className="text-slate-700">{label}</span>
+                </div>
+              </Reveal>
+            ))}
+          </ul>
         </section>
 
         <section aria-labelledby="work">
