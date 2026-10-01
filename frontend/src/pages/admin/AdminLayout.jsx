@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
 import { SquaresFour, ArrowLeft, BookOpen, Tag, ChalkboardTeacher, Receipt, Envelope, Users } from "@phosphor-icons/react";
 import { useTitle } from "../../lib/hooks.js";
@@ -22,6 +22,7 @@ const item = ({ isActive }) =>
 export default function AdminLayout() {
   useTitle("Admin", { noindex: true });
   const { user } = useAuth();
+  const { pathname } = useLocation();
   return (
     <div className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <aside aria-label="Admin" className="lg:sticky lg:top-24 lg:self-start">
@@ -44,7 +45,7 @@ export default function AdminLayout() {
       </aside>
       <section aria-label="Admin content" className="min-w-0">
         <Suspense fallback={<div role="status" aria-busy="true" className="min-h-[40dvh]"><span className="sr-only">Loading</span></div>}>
-          <Outlet />
+          <div key={pathname} className="page-in"><Outlet /></div>
         </Suspense>
       </section>
     </div>
