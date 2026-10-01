@@ -1,8 +1,12 @@
 import { useTitle } from "../lib/hooks.js";
 import { OWNER } from "../lib/site.js";
 import { Avatar } from "../components/Media.jsx";
-import { Reveal } from "../components/Fun.jsx";
-import { ArrowUpRight, GithubLogo, EnvelopeSimple, LinkedinLogo, Code, Users, Certificate, ShieldCheck, TestTube, ClockCountdown } from "@phosphor-icons/react";
+import { motion } from "motion/react";
+import { ArrowUpRight, GithubLogo, EnvelopeSimple, LinkedinLogo, Code, Users, Certificate, ShieldCheck, TestTube, ClockCountdown, MapPin } from "@phosphor-icons/react";
+import { EASE, Reveal } from "../components/Fun.jsx";
+
+const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } };
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
 const ROLES = [
   ["AI Trainer", "CodedevH · Allenhouse Institute of Technology & Business School", "Aug 2026 to now", "Delivering applied AI training and developing AI models, translating model-building workflows into structured learning material."],
@@ -67,17 +71,20 @@ export default function Portfolio() {
   });
   return (
     <div className="grid gap-16 lg:grid-cols-[22rem_1fr] lg:gap-20">
-      <aside className="lg:sticky lg:top-24 lg:self-start">
-        <Avatar name={OWNER.name} photo="/image.jpeg" size="h-40 w-40" text="text-3xl" />
-        <h1 className="mt-6 text-5xl font-semibold leading-none">{OWNER.name}</h1>
-        <p className="mt-4 text-lg text-slate-700">AI & Full-Stack Trainer and Full-Stack Developer in Vadodara, Gujarat. 2000+ students trained across leading universities; real-world products shipped in Django, React and Generative AI.</p>
-        <div className="mt-6 flex flex-wrap gap-3">
+      <motion.aside initial="hidden" animate="show" variants={stagger} className="lg:sticky lg:top-24 lg:self-start">
+        <motion.div variants={fadeUp} className="inline-block overflow-hidden rounded-full border-2 border-brand-500/50 p-1">
+          <Avatar name={OWNER.name} photo="/image.jpeg" size="h-40 w-40" text="text-3xl" />
+        </motion.div>
+        <motion.p variants={fadeUp} className="tag mt-6"><MapPin size={14} aria-hidden="true" />{OWNER.location || "Vadodara, Gujarat"}</motion.p>
+        <motion.h1 variants={fadeUp} className="mt-3 text-5xl font-semibold leading-none">{OWNER.name}</motion.h1>
+        <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-700">AI & Full-Stack Trainer and Full-Stack Developer in Vadodara, Gujarat. 2000+ students trained across leading universities; real-world products shipped in Django, React and Generative AI.</motion.p>
+        <motion.div variants={fadeUp} className="mt-6 flex flex-wrap gap-3">
           <a href="#contact" className="btn btn-primary"><EnvelopeSimple size={18} aria-hidden="true" />Get in touch</a>
           <a href={OWNER.github} target="_blank" rel="noopener noreferrer" className="btn btn-quiet"><GithubLogo size={18} aria-hidden="true" />GitHub<span className="sr-only"> (opens in a new tab)</span></a>
           {OWNER.linkedin && <a href={OWNER.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-quiet"><LinkedinLogo size={18} aria-hidden="true" />LinkedIn<span className="sr-only"> (opens in a new tab)</span></a>}
           {OWNER.leetcode && <a href={OWNER.leetcode} target="_blank" rel="noopener noreferrer" className="btn btn-quiet"><Code size={18} aria-hidden="true" />LeetCode<span className="sr-only"> (opens in a new tab)</span></a>}
-        </div>
-      </aside>
+        </motion.div>
+      </motion.aside>
 
       <div className="min-w-0 space-y-20">
         <section aria-labelledby="about">
