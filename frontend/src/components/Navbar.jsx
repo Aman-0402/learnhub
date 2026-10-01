@@ -81,8 +81,7 @@ export default function Navbar() {
             <ThemeToggle />
             {user ? (
               <>
-                {isStaff && <Link to="/manage" className="px-3 text-sm font-medium text-slate-700">Admin</Link>}
-                <Link to="/dashboard" className="btn btn-quiet btn-sm ml-2">Dashboard</Link>
+                <Link to={isStaff ? "/manage" : "/dashboard"} className="btn btn-quiet btn-sm ml-2">Dashboard</Link>
                 <Link to="/profile" className="px-3 text-sm font-medium text-slate-700">{user.full_name.split(" ")[0]}</Link>
                 <button onClick={() => { nav("/"); logout(); }} className="px-1 text-sm font-medium text-slate-600 hover-fine:text-slate-900">Log out</button>
               </>
@@ -109,8 +108,7 @@ export default function Navbar() {
               <div className="h-px bg-slate-200" />
               {user ? (
                 <>
-                  {isStaff && <Item to="/manage" onClick={close} indicator={false}>Admin</Item>}
-                  <Item to="/dashboard" onClick={close} indicator={false}>Dashboard</Item>
+                  <Item to={isStaff ? "/manage" : "/dashboard"} onClick={close} indicator={false}>Dashboard</Item>
                   <Item to="/my-courses" onClick={close} indicator={false}>My courses</Item>
                   <Item to="/payments" onClick={close} indicator={false}>Payments</Item>
                   <Item to="/profile" onClick={close} indicator={false}>Profile</Item>
