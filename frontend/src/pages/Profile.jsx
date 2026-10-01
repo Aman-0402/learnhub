@@ -20,12 +20,12 @@ function PasswordCard() {
   };
   return (
     <Card className="mt-6">
-      <h2 className="mb-4 font-semibold">Change password</h2>
+      <h2 className="mb-4 text-xl font-semibold">Change password</h2>
       <form onSubmit={submit} className="space-y-4">
         {msg && <Notice kind={msg.kind}>{msg.text}</Notice>}
         <Field label="Current password" type="password" required autoComplete="current-password" value={f.old_password} onChange={(e) => setF({ ...f, old_password: e.target.value })} />
         <Field label="New password (min 8 characters)" type="password" required minLength={8} autoComplete="new-password" value={f.new_password} onChange={(e) => setF({ ...f, new_password: e.target.value })} />
-        <button className={submitCls} disabled={busy}>{busy ? "Updating…" : "Update password"}</button>
+        <button className={submitCls} disabled={busy}>{busy ? "Updating..." : "Update password"}</button>
       </form>
     </Card>
   );
@@ -56,7 +56,7 @@ export default function Profile() {
           <Field label="Email" value={user.email} disabled readOnly />
           <Field label="Full name" required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
           <Field label="Phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-          <button className={submitCls} disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>
+          <button className={submitCls} disabled={busy}>{busy ? "Saving..." : "Save changes"}</button>
         </form>
       </Card>
       <PasswordCard />

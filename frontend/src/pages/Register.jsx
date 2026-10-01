@@ -29,7 +29,7 @@ export default function Register() {
         <Field label="Password (min 8 characters)" type="password" required minLength={8} {...bind("password")} />
         <button className={submitCls} disabled={busy}>{busy ? "Creating…" : "Sign up"}</button>
       </form>
-      <p className="mt-4 text-center text-sm text-slate-600">Already registered? <Link className="font-medium text-brand" to="/login">Log in</Link></p>
+      <p className="mt-4 text-center text-sm text-slate-600">Already registered? <Link className="link-draw font-semibold text-brand-strong" to="/login">Log in</Link></p>
     </AuthCard>
   );
 }

@@ -29,14 +29,14 @@ export default function ForgotPassword() {
           {isSample("passwordResetApi") && (
             <SampleNote>Sample mode: no email is sent yet. <Link to="/reset-password?uid=sample&token=sample" className="font-semibold underline">Open the reset page</Link> to see the next step.</SampleNote>
           )}
-          <Link to="/login" className="block text-center text-sm font-medium text-brand">Back to log in</Link>
+          <Link to="/login" className="link-draw block text-center text-sm font-semibold text-brand-strong">Back to log in</Link>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-4">
           <p className="text-sm text-slate-600">Enter your account email and we will send you a link to choose a new password.</p>
           <Field label="Email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <button className={submitCls} disabled={busy}>{busy ? "Sending…" : "Send reset link"}</button>
-          <Link to="/login" className="block text-center text-sm font-medium text-brand">Back to log in</Link>
+          <Link to="/login" className="link-draw block text-center text-sm font-semibold text-brand-strong">Back to log in</Link>
         </form>
       )}
     </AuthCard>

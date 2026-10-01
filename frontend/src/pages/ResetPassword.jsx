@@ -19,7 +19,7 @@ export default function ResetPassword() {
     return (
       <AuthCard title="This link is not valid">
         <p className="text-sm text-slate-600">The reset link is missing or incomplete. Request a new one and try again.</p>
-        <Link to="/forgot-password" className={`${submitCls} mt-5 block text-center`}>Request a new link</Link>
+        <Link to="/forgot-password" className={`${submitCls} mt-5`}>Request a new link</Link>
       </AuthCard>
     );
   }
@@ -37,7 +37,7 @@ export default function ResetPassword() {
     return (
       <AuthCard title="Password updated">
         <Notice kind="ok">Your password has been reset. You can now log in.</Notice>
-        <Link to="/login" className={`${submitCls} mt-5 block text-center`}>Log in</Link>
+        <Link to="/login" className={`${submitCls} mt-5`}>Log in</Link>
       </AuthCard>
     );
   }

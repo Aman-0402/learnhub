@@ -1,48 +1,50 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Home from "./pages/Home.jsx";
-import Courses from "./pages/Courses.jsx";
-import CourseDetail from "./pages/CourseDetail.jsx";
-import Instructors from "./pages/Instructors.jsx";
-import InstructorDetail from "./pages/InstructorDetail.jsx";
-import About from "./pages/About.jsx";
-import Contact from "./pages/Contact.jsx";
-import Faq from "./pages/Faq.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import ForgotPassword from "./pages/ForgotPassword.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
-import Checkout from "./pages/Checkout.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import MyCourses from "./pages/MyCourses.jsx";
-import Learn from "./pages/Learn.jsx";
-import Payments from "./pages/Payments.jsx";
-import Receipt from "./pages/Receipt.jsx";
-import Profile from "./pages/Profile.jsx";
-import Portfolio from "./pages/Portfolio.jsx";
-import Saved from "./pages/Saved.jsx";
-import Compare from "./pages/Compare.jsx";
+const Courses = lazy(() => import("./pages/Courses.jsx"));
+const CourseDetail = lazy(() => import("./pages/CourseDetail.jsx"));
+const Instructors = lazy(() => import("./pages/Instructors.jsx"));
+const InstructorDetail = lazy(() => import("./pages/InstructorDetail.jsx"));
+const About = lazy(() => import("./pages/About.jsx"));
+const Contact = lazy(() => import("./pages/Contact.jsx"));
+const Faq = lazy(() => import("./pages/Faq.jsx"));
+const Login = lazy(() => import("./pages/Login.jsx"));
+const Register = lazy(() => import("./pages/Register.jsx"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword.jsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.jsx"));
+const Checkout = lazy(() => import("./pages/Checkout.jsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
+const MyCourses = lazy(() => import("./pages/MyCourses.jsx"));
+const Learn = lazy(() => import("./pages/Learn.jsx"));
+const Payments = lazy(() => import("./pages/Payments.jsx"));
+const Receipt = lazy(() => import("./pages/Receipt.jsx"));
+const Profile = lazy(() => import("./pages/Profile.jsx"));
+const Portfolio = lazy(() => import("./pages/Portfolio.jsx"));
+const Saved = lazy(() => import("./pages/Saved.jsx"));
+const Compare = lazy(() => import("./pages/Compare.jsx"));
 import { useTitle } from "./lib/hooks.js";
 
 const guard = (el) => <RequireAuth>{el}</RequireAuth>;
 
 function NotFound() {
   useTitle("Page not found", { noindex: true });
-  return <div className="text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-slate-600">The page you are looking for does not exist.</p></div>;
+  return <div className="py-16"><h1 className="text-4xl font-semibold tracking-tight">Page not found</h1><p className="mt-3 text-slate-600">The page you are looking for does not exist.</p><Link to="/courses" className="btn btn-primary mt-6">Browse courses</Link></div>;
 }
 
 export default function App() {
   const { pathname } = useLocation();
   return (
-    <div className="flex min-h-screen flex-col">
-      <a href="#main" className="sr-only z-50 rounded-lg bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4">Skip to main content</a>
+    <div className="flex min-h-[100dvh] flex-col">
+      <a href="#main" className="sr-only z-50 btn btn-primary focus:not-sr-only focus:absolute focus:left-4 focus:top-4">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
-      <main id="main" tabIndex={-1} className="shell flex-1 py-8 outline-none">
-        <div key={pathname} className="animate-fade-up">
+      <main id="main" tabIndex={-1} className="shell flex-1 py-8">
+        <div key={pathname} className="page-in">
+        <Suspense fallback={<div role="status" aria-busy="true" className="min-h-[60dvh]"><span className="sr-only">Loading</span></div>}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
@@ -68,6 +70,7 @@ export default function App() {
           <Route path="/profile" element={guard(<Profile />)} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
         </div>
       </main>
       <Footer />

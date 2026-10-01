@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "@phosphor-icons/react";
 import { useTitle } from "../lib/hooks.js";
-import PageHeader, { Card } from "../components/PageHeader.jsx";
+import { Reveal } from "../components/Fun.jsx";
 
 const values = [
   ["Learn your way", "Attend classes online from home, in person at our centre, or mix both."],
@@ -16,27 +17,33 @@ const steps = [
 export default function About() {
   useTitle("About", { description: "LearnHub helps students learn the subjects they care about, online, in person or both, with clear fees and small batches." });
   return (
-    <div className="space-y-14">
-      <PageHeader title="About LearnHub" subtitle="We help students learn the subjects they care about, in the format that suits them." />
-      <section className="grid gap-5 md:grid-cols-3">
-        {values.map(([t, d]) => (
-          <Card key={t}><h2 className="font-semibold">{t}</h2><p className="mt-2 text-sm text-slate-600">{d}</p></Card>
-        ))}
+    <div className="space-y-24">
+      <header className="max-w-4xl pt-6">
+        <h1 className="text-5xl font-semibold leading-[1.02] sm:text-7xl">We help students learn what they care about, in the format that suits them.</h1>
+      </header>
+      <section aria-labelledby="values" className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
+        <h2 id="values" className="text-3xl font-semibold sm:text-4xl">What we stand for</h2>
+        <ul className="border-t border-slate-200">
+          {values.map(([t, d], i) => (
+            <Reveal as="li" key={t} delay={i * 60} className="border-b border-slate-200 py-6">
+              <h3 className="text-xl font-semibold">{t}</h3><p className="mt-2 max-w-xl text-slate-600">{d}</p>
+            </Reveal>
+          ))}
+        </ul>
       </section>
-      <section>
-        <h2 className="mb-5 text-xl font-semibold">How it works</h2>
-        <ol className="grid gap-5 md:grid-cols-3">
+      <section aria-labelledby="how" className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
+        <h2 id="how" className="text-3xl font-semibold sm:text-4xl">How it works</h2>
+        <ol className="border-t border-slate-200">
           {steps.map(([t, d], i) => (
-            <li key={t} className="flex gap-4">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-strong">{i + 1}</span>
-              <div><p className="font-semibold">{t}</p><p className="text-sm text-slate-600">{d}</p></div>
-            </li>
+            <Reveal as="li" key={t} delay={i * 60} className="flex gap-6 border-b border-slate-200 py-6">
+              <span className="num w-6 shrink-0 text-slate-500">{i + 1}</span>
+              <div><h3 className="text-xl font-semibold">{t}</h3><p className="mt-1 text-slate-600">{d}</p></div>
+            </Reveal>
           ))}
         </ol>
       </section>
-      <section className="rounded-2xl bg-brand-50 px-8 py-10 text-center">
-        <h2 className="text-2xl font-bold">Ready to start learning?</h2>
-        <Link to="/courses" className="mt-5 inline-block rounded-lg bg-brand-600 px-5 py-2.5 font-semibold text-white hover:bg-brand-700">Browse courses</Link>
+      <section className="border-t border-slate-900 pt-10">
+        <Link to="/courses" className="btn btn-primary">Browse courses <ArrowRight size={18} aria-hidden="true" /></Link>
       </section>
     </div>
   );

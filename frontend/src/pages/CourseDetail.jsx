@@ -47,46 +47,49 @@ export default function CourseDetail() {
   const rows = [
     ["Duration", `${course.duration_weeks} weeks`],
     course.start_date && ["Starts", new Date(course.start_date).toLocaleDateString("en-IN", { dateStyle: "long" })],
-    course.instructor && ["Instructor", course.instructor_slug ? <Link key="i" to={`/instructors/${course.instructor_slug}`} className="text-brand hover:underline">{course.instructor}</Link> : course.instructor],
+    course.instructor && ["Instructor", course.instructor_slug ? <Link key="i" to={`/instructors/${course.instructor_slug}`} className="link-draw text-brand-strong">{course.instructor}</Link> : course.instructor],
     course.location && ["Location", course.location],
     course.seats_left != null && ["Seats left", String(course.seats_left)],
   ].filter(Boolean);
 
   return (
     <div>
-      <div className="relative mb-6 overflow-hidden rounded-3xl"><CourseThumb course={course} className="h-44 sm:h-56" label /><HeartButton className="absolute right-4 top-4" active={wish.has(course.slug)} onClick={() => wish.toggle(course.slug)} title={course.title} /></div>
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="text-sm font-medium uppercase tracking-wide text-slate-500">{course.subject.name}</span>
-            <ModeBadge mode={course.mode} label={course.mode_display} />
-          </div>
-          <h1 className="font-display text-4xl font-bold">{course.title}</h1>
-          <p className="mt-4 whitespace-pre-line text-slate-700">{course.description}</p>
+      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-slate-600">
+        <Link to="/courses" className="link-draw">Courses</Link><span aria-hidden="true" className="mx-2">/</span><span>{course.subject.name}</span>
+      </nav>
+      <div className="grid gap-12 lg:grid-cols-[1.6fr_1fr]">
+        <div>
+          <div className="mb-5 flex items-center gap-3"><ModeBadge label={course.mode_display} /></div>
+          <h1 className="text-4xl font-semibold leading-[1.05] sm:text-6xl">{course.title}</h1>
+          <div className="relative mt-8 overflow-hidden rounded-[var(--radius-card)]"><CourseThumb course={course} className="h-28 sm:h-36" label /></div>
+          <p className="mt-8 max-w-2xl whitespace-pre-line text-lg text-slate-700">{course.description}</p>
         </div>
-        <aside aria-label="Enrollment" className="h-fit rounded-3xl border border-slate-200 bg-surface p-6 shadow-sm">
-          <p className="text-3xl font-bold text-brand">{inr(course.fee)}</p>
-          <dl className="mt-4 space-y-2 text-sm">
+        <aside aria-label="Enrollment" className="card h-fit p-6 lg:sticky lg:top-24">
+          <div className="flex items-start justify-between gap-3">
+            <p className="num text-4xl font-semibold">{inr(course.fee)}</p>
+            <HeartButton active={wish.has(course.slug)} onClick={() => wish.toggle(course.slug)} title={course.title} />
+          </div>
+          <dl className="mt-5 space-y-3 border-t border-slate-200 pt-5 text-sm">
             {rows.map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-4"><dt className="text-slate-500">{k}</dt><dd className="text-right font-medium">{v}</dd></div>
+              <div key={k} className="flex justify-between gap-4"><dt className="text-slate-600">{k}</dt><dd className="text-right font-medium">{v}</dd></div>
             ))}
           </dl>
           {batches.length > 0 && !full && <BatchPicker batches={batches} value={batch} onChange={setBatch} />}
           {batches.length > 0 && isSample("batchesApi") && <div className="mt-3"><SampleNote>Sample batch timings. Real timings appear once batches are added on the server.</SampleNote></div>}
           {full ? (
-            <p className="mt-6 rounded-lg bg-slate-100 px-4 py-2.5 text-center font-medium text-slate-600">Course is full</p>
+            <p className="mt-6 rounded-xl bg-slate-100 px-4 py-3 text-center font-medium text-slate-600">Course is full</p>
           ) : (
             <button onClick={() => nav(`/checkout/${course.slug}${batch ? `?batch=${batch}` : ""}`)} disabled={needsBatch} aria-describedby={needsBatch ? "batch-hint" : undefined}
-              className="mt-6 block w-full rounded-full bg-brand-600 px-4 py-3 text-center font-bold text-white transition hover:-translate-y-0.5 hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60">
+              className="btn btn-primary mt-6 w-full">
               Enroll now
             </button>
           )}
-          {needsBatch && !full && <p id="batch-hint" className="mt-2 text-center text-xs text-slate-500">Choose a batch to continue.</p>}
+          {needsBatch && !full && <p id="batch-hint" className="mt-2 text-center text-xs text-slate-600">Choose a batch to continue.</p>}
         </aside>
       </div>
       {similar.length > 0 && (
-        <section aria-labelledby="similar" className="mt-12">
-          <h2 id="similar" className="mb-4 font-display text-2xl font-bold">More in {course.subject.name}</h2>
+        <section aria-labelledby="similar" className="mt-20">
+          <h2 id="similar" className="mb-6 text-3xl font-semibold">More in {course.subject.name}</h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{similar.map((c) => <CourseCard key={c.id} course={c} />)}</div>
         </section>
       )}

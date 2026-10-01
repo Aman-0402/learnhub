@@ -1,19 +1,48 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { List, X, Heart } from "@phosphor-icons/react";
 import { useAuth } from "../lib/auth.jsx";
 import { SITE } from "../lib/site.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { useWishlist } from "../lib/store.js";
+import { EASE } from "./Fun.jsx";
 
 const link = ({ isActive }) =>
-  `text-sm font-bold ${isActive ? "text-brand" : "text-slate-600 hover:text-slate-900"}`;
+  `relative py-1 text-sm font-medium transition-colors duration-150 ${isActive ? "text-slate-900" : "text-slate-600 hover-fine:text-slate-900"}`;
+
+/** Nav link with an underline that slides between the active links. */
+function Item({ to, children, onClick, indicator = true }) {
+  return (
+    <NavLink to={to} className={link} onClick={onClick}>
+      {({ isActive }) => (
+        <>
+          {children}
+          {isActive && indicator && <motion.span layoutId="nav-underline" aria-hidden="true" className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-brand-600" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
+        </>
+      )}
+    </NavLink>
+  );
+}
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
   const saved = useWishlist().slugs.length;
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const sentinel = useRef(null);
   const close = () => setOpen(false);
+
+  // A 1px sentinel at the top of the page tells us when to draw the header edge, with no scroll listener.
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setScrolled(!e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && setOpen(false);
@@ -21,65 +50,79 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const items = (
+  const items = (indicator) => (
     <>
-      <NavLink to="/courses" className={link} onClick={close}>Courses</NavLink>
-      <NavLink to="/instructors" className={link} onClick={close}>Instructors</NavLink>
-      <NavLink to="/saved" className={link} onClick={close}>Saved{saved > 0 && <span className="ml-1.5 rounded-full bg-coral px-1.5 py-0.5 text-xs font-bold text-white"><span className="sr-only"> </span>{saved}</span>}</NavLink>
-      <NavLink to="/about" className={link} onClick={close}>About</NavLink>
-      <NavLink to="/portfolio" className={link} onClick={close}>Portfolio</NavLink>
-      <NavLink to="/faq" className={link} onClick={close}>FAQ</NavLink>
-      <NavLink to="/contact" className={link} onClick={close}>Contact</NavLink>
+      <Item to="/courses" onClick={close} indicator={indicator}>Courses</Item>
+      <Item to="/instructors" onClick={close} indicator={indicator}>Instructors</Item>
+      <Item to="/about" onClick={close} indicator={indicator}>About</Item>
+      <Item to="/portfolio" onClick={close} indicator={indicator}>Portfolio</Item>
+      <Item to="/faq" onClick={close} indicator={indicator}>FAQ</Item>
+      <Item to="/contact" onClick={close} indicator={indicator}>Contact</Item>
     </>
   );
 
+  const savedLink = (
+    <NavLink to="/saved" onClick={close} aria-label={saved ? `Saved courses, ${saved}` : "Saved courses"} className="relative flex h-10 items-center gap-1.5 rounded-xl px-2.5 text-sm font-medium text-slate-700 transition-colors hover-fine:bg-slate-100">
+      <Heart size={20} aria-hidden="true" />
+      {saved > 0 && <span className="num text-xs font-semibold">{saved}</span>}
+    </NavLink>
+  );
+
   return (
-    <header className="sticky top-0 z-20 print:hidden border-b-2 border-brand-100 bg-surface/90 backdrop-blur">
-      <div className="shell flex items-center justify-between gap-4 py-3">
-        <Link to="/" className="font-display text-2xl font-bold text-brand"><span aria-hidden="true" className="mr-1.5 inline-block animate-wiggle">🎓</span>{SITE.name}</Link>
-        <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">{items}</nav>
-        <div className="hidden items-center gap-3 lg:flex">
-          <ThemeToggle />
-          {user ? (
-            <>
-              <NavLink to="/dashboard" className={link}>Dashboard</NavLink>
-              <NavLink to="/profile" className={link}>{user.full_name.split(" ")[0]}</NavLink>
-              <button onClick={() => { nav("/"); logout(); }} className="text-sm font-medium text-slate-600 hover:text-slate-900">Log out</button>
-            </>
-          ) : (
-            <>
-              <NavLink to="/login" className={link}>Log in</NavLink>
-              <Link to="/register" className="rounded-full bg-brand-600 px-4 py-1.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-700">Sign up</Link>
-            </>
-          )}
+    <>
+      <div ref={sentinel} aria-hidden="true" className="absolute left-0 top-0 h-px w-px" />
+      <header className={`sticky top-0 z-20 print:hidden bg-slate-50/90 backdrop-blur-sm transition-[border-color] duration-200 border-b ${scrolled || open ? "border-slate-200" : "border-transparent"}`}>
+        <div className="shell flex items-center justify-between gap-4 py-3">
+          <Link to="/" className="font-display text-2xl font-bold tracking-tight">{SITE.name}</Link>
+          <nav aria-label="Main" className="hidden items-center gap-7 lg:flex">{items(true)}</nav>
+          <div className="hidden items-center gap-1 lg:flex">
+            {savedLink}
+            <ThemeToggle />
+            {user ? (
+              <>
+                <Link to="/dashboard" className="btn btn-quiet btn-sm ml-2">Dashboard</Link>
+                <Link to="/profile" className="px-3 text-sm font-medium text-slate-700">{user.full_name.split(" ")[0]}</Link>
+                <button onClick={() => { nav("/"); logout(); }} className="px-1 text-sm font-medium text-slate-600 hover-fine:text-slate-900">Log out</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="px-3 text-sm font-medium text-slate-700">Log in</Link>
+                <Link to="/register" className="btn btn-primary btn-sm">Sign up</Link>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-1 lg:hidden">
+            {savedLink}
+            <ThemeToggle />
+            <button aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-700 active:scale-95">
+              {open ? <X size={22} aria-hidden="true" /> : <List size={22} aria-hidden="true" />}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-1 lg:hidden"><ThemeToggle />
-        <button aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className="rounded-lg p-2 text-slate-700">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-          </svg>
-        </button></div>
-      </div>
-      {open && (
-        <div id="mobile-menu" className="shell flex flex-col gap-4 border-t border-slate-200 py-4 lg:hidden">
-          {items}
-          <div className="h-px bg-slate-200" />
-          {user ? (
-            <>
-              <NavLink to="/dashboard" className={link} onClick={close}>Dashboard</NavLink>
-              <NavLink to="/my-courses" className={link} onClick={close}>My courses</NavLink>
-              <NavLink to="/payments" className={link} onClick={close}>Payments</NavLink>
-              <NavLink to="/profile" className={link} onClick={close}>Profile</NavLink>
-              <button onClick={() => { close(); nav("/"); logout(); }} className="text-left text-sm font-medium text-slate-600">Log out</button>
-            </>
-          ) : (
-            <>
-              <NavLink to="/login" className={link} onClick={close}>Log in</NavLink>
-              <NavLink to="/register" className={link} onClick={close}>Sign up</NavLink>
-            </>
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div id="mobile-menu" key="menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2, ease: EASE }}
+              className="shell flex flex-col gap-4 border-t border-slate-200 py-5 lg:hidden">
+              {items(false)}
+              <div className="h-px bg-slate-200" />
+              {user ? (
+                <>
+                  <Item to="/dashboard" onClick={close} indicator={false}>Dashboard</Item>
+                  <Item to="/my-courses" onClick={close} indicator={false}>My courses</Item>
+                  <Item to="/payments" onClick={close} indicator={false}>Payments</Item>
+                  <Item to="/profile" onClick={close} indicator={false}>Profile</Item>
+                  <button onClick={() => { close(); nav("/"); logout(); }} className="text-left text-sm font-medium text-slate-600">Log out</button>
+                </>
+              ) : (
+                <>
+                  <Item to="/login" onClick={close} indicator={false}>Log in</Item>
+                  <Item to="/register" onClick={close} indicator={false}>Sign up</Item>
+                </>
+              )}
+            </motion.div>
           )}
-        </div>
-      )}
-    </header>
+        </AnimatePresence>
+      </header>
+    </>
   );
 }

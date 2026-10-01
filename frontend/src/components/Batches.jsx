@@ -5,7 +5,7 @@ export const timeRange = (b) => `${fmtTime(b.start_time)} to ${fmtTime(b.end_tim
 export const dayList = (b) => DAY_ORDER.filter((d) => b.days.includes(d)).join(", ");
 
 export function SampleNote({ children }) {
-  return <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">{children}</p>;
+  return <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">{children}</p>;
 }
 
 export function BatchPicker({ batches, value, onChange }) {
@@ -16,11 +16,11 @@ export function BatchPicker({ batches, value, onChange }) {
         {batches.map((b) => {
           const full = b.seats_left === 0;
           return (
-            <label key={b.id} className={`block cursor-pointer rounded-lg border p-3 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${full ? "cursor-not-allowed opacity-60" : "border-slate-200"}`}>
+            <label key={b.id} className={`block cursor-pointer rounded-xl border p-3.5 text-sm transition-colors duration-150 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${full ? "cursor-not-allowed opacity-60" : "border-slate-200"}`}>
               <input type="radio" name="batch" className="sr-only" disabled={full} checked={String(value) === String(b.id)} onChange={() => onChange(b.id)} />
               <span className="block font-medium">{b.label}</span>
-              <span className="block text-slate-600">{dayList(b)} · {timeRange(b)}</span>
-              <span className="block text-xs text-slate-500">{b.format}{b.seats_left != null && ` · ${full ? "Full" : `${b.seats_left} seats left`}`}</span>
+              <span className="block text-slate-600">{dayList(b)}, {timeRange(b)}</span>
+              <span className="block text-xs text-slate-500">{b.format}{b.seats_left != null && `, ${full ? "Full" : `${b.seats_left} seats left`}`}</span>
             </label>
           );
         })}
@@ -47,12 +47,12 @@ export function Timetable({ batch }) {
   return (
     <div>
       <h2 className="font-semibold">{batch.label}</h2>
-      <p className="text-sm text-slate-600">{timeRange(batch)} · {batch.format}</p>
+      <p className="text-sm text-slate-600">{timeRange(batch)}, {batch.format}</p>
       <ol aria-label="Weekly timetable" className="mt-4 grid grid-cols-7 gap-1.5 text-center text-xs">
         {DAY_ORDER.map((d) => {
           const on = batch.days.includes(d);
           return (
-            <li key={d} className={`rounded-lg px-1 py-2 ${on ? "bg-brand-600 font-semibold text-white" : "bg-slate-100 text-slate-600"}`}>
+            <li key={d} className={`rounded-lg px-1 py-2 ${on ? "bg-brand-600 font-semibold text-[var(--color-on-accent)]" : "bg-slate-100 text-slate-600"}`}>
               {d}<span className="sr-only">{on ? ", class day" : ", no class"}</span>
             </li>
           );

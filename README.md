@@ -16,7 +16,7 @@ A website to sell online and offline classes across multiple subjects. Students 
 - Payments: **mock by default**. Razorpay is wired in (`backend/enrollments/payments.py`, webhook at `/api/payments/razorpay/webhook/`) and switches on with `PAYMENT_GATEWAY=razorpay` plus your keys in `backend/.env`. See `Agent.md` for the go-live checklist.
 
 ## Frontend highlights
-Playful colourful design with dark mode, instant course filters (subject, format, price, seats, sort), compare up to 3 courses, saved courses, recently viewed, next-class card, lesson progress and calendar export. Saved courses, recently viewed and lesson progress are stored in your browser only.
+Ink and emerald design (one accent, light and dark) with purposeful motion that respects reduced-motion settings, self-hosted fonts, instant course filters (subject, format, price, seats, sort), compare up to 3 courses, saved courses, recently viewed, next-class card, lesson progress and calendar export. Saved courses, recently viewed and lesson progress are stored in your browser only.
 
 ## SEO
 Each page sets its own title, description, canonical link, sharing tags and (for courses, instructors and the home page) schema.org data. Private pages are marked noindex. `robots.txt` is generated at build time and `/sitemap.xml` comes from the backend. Set `VITE_SITE_URL` (frontend build) and `SITE_URL` (backend) to your real domain.

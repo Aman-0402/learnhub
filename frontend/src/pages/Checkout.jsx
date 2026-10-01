@@ -44,28 +44,28 @@ export default function Checkout() {
   };
 
   return (
-    <div className="mx-auto max-w-lg rounded-xl border border-slate-200 bg-surface p-8 shadow-sm">
-      <h1 className="mb-6 text-2xl font-bold">Checkout</h1>
+    <div className="card mx-auto max-w-lg p-8">
+      <h1 className="mb-6 text-4xl font-semibold">Checkout</h1>
       <div className="flex justify-between gap-4 border-b border-slate-200 pb-4">
-        <div><p className="font-semibold">{course.title}</p><p className="text-sm text-slate-500">{course.mode_display} · {course.duration_weeks} weeks</p></div>
-        <p className="font-bold">{inr(course.fee)}</p>
+        <div><p className="font-semibold">{course.title}</p><p className="text-sm text-slate-600">{course.mode_display}, {course.duration_weeks} weeks</p></div>
+        <p className="num font-semibold">{inr(course.fee)}</p>
       </div>
       {batch && (
         <div className="border-b border-slate-200 py-4 text-sm">
           <p className="font-medium">{batch.label}</p>
-          <p className="text-slate-600">{dayList(batch)} · {timeRange(batch)}</p>
-          <Link to={`/courses/${slug}`} className="text-brand hover:underline">Change batch</Link>
-          {isSample("batchesApi") && <p className="mt-2 text-xs text-slate-500">Sample batch: it is remembered in this browser only until batches are saved on the server.</p>}
+          <p className="text-slate-600">{dayList(batch)}, {timeRange(batch)}</p>
+          <Link to={`/courses/${slug}`} className="link-draw font-medium text-brand-strong">Change batch</Link>
+          {isSample("batchesApi") && <p className="mt-2 text-xs text-slate-600">Sample batch: it is remembered in this browser only until batches are saved on the server.</p>}
         </div>
       )}
-      <div className="flex justify-between py-4 text-lg font-bold"><span>Total</span><span>{inr(course.fee)}</span></div>
-      {gateway === "mock" && <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">Test mode: no real payment is taken yet.</p>}
+      <div className="flex justify-between py-4 text-lg font-semibold"><span>Total</span><span className="num">{inr(course.fee)}</span></div>
+      {gateway === "mock" && <p className="mb-4 rounded-xl bg-amber-50 px-3 py-2.5 text-sm text-amber-800">Test mode: no real payment is taken yet.</p>}
       {missingBatch && <div className="mb-4"><Notice>Please choose a batch on the course page before paying.</Notice></div>}
       {error && <div className="mb-4"><Notice>{error}</Notice></div>}
-      <button onClick={pay} disabled={busy || missingBatch} className="w-full rounded-lg bg-brand-600 px-4 py-2.5 font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60">
-        {busy ? "Processing…" : `Pay ${inr(course.fee)}`}
+      <button onClick={pay} disabled={busy || missingBatch} className="btn btn-primary w-full">
+        {busy ? "Processing..." : `Pay ${inr(course.fee)}`}
       </button>
-      <Link to={`/courses/${course.slug}`} className="mt-3 block text-center text-sm text-slate-500 hover:text-slate-800">Back to course</Link>
+      <Link to={`/courses/${course.slug}`} className="mt-4 block text-center link-draw text-sm text-slate-600">Back to course</Link>
     </div>
   );
 }

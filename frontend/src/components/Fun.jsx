@@ -1,69 +1,65 @@
-import { useEffect, useState } from "react";
-import { useCountUp, useReveal } from "../lib/hooks.js";
+import { motion, useReducedMotion } from "motion/react";
+import { Heart, Check, BookOpen } from "@phosphor-icons/react";
 
-export function Reveal({ as: Tag = "div", delay = 0, className = "", children, ...rest }) {
-  const [ref, cls] = useReveal();
-  return <Tag ref={ref} style={{ "--reveal-delay": `${delay}ms` }} className={`${cls} ${className}`} {...rest}>{children}</Tag>;
+export const EASE = [0.23, 1, 0.32, 1];
+
+/** Fades and lifts content once as it enters the viewport. Used on marketing sections only. */
+export function Reveal({ as = "div", delay = 0, className = "", children, ...rest }) {
+  const reduce = useReducedMotion();
+  const Tag = motion[as] || motion.div;
+  return (
+    <Tag className={className} initial={reduce ? false : { opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -8% 0px" }} transition={{ duration: 0.55, ease: EASE, delay: delay / 1000 }} {...rest}>
+      {children}
+    </Tag>
+  );
 }
 
-export function CountUp({ value, suffix = "" }) {
-  const [ref, n] = useCountUp(value);
-  return <span ref={ref}><span aria-hidden="true">{n}{suffix}</span><span className="sr-only">{value}{suffix}</span></span>;
-}
-
+/** Progress track that fills with a transform, not a width change. */
 export function ProgressBar({ value, label, className = "" }) {
   const pct = Math.max(0, Math.min(100, Math.round(value)));
   return (
     <div className={className}>
-      <div role="progressbar" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="h-2.5 overflow-hidden rounded-full bg-slate-200">
-        <div className="h-full rounded-full bg-gradient-to-r from-brand-600 to-coral transition-[width] duration-700" style={{ width: `${pct}%` }} />
+      <div role="progressbar" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+        <motion.div className="h-full w-full origin-left rounded-full bg-brand-600" initial={{ scaleX: 0 }} animate={{ scaleX: pct / 100 }} transition={{ duration: 0.7, ease: EASE }} />
       </div>
     </div>
   );
 }
 
 export function HeartButton({ active, onClick, title, className = "" }) {
-  const [pop, setPop] = useState(false);
   return (
-    <button type="button" aria-pressed={active} aria-label={active ? `Remove ${title} from saved` : `Save ${title}`}
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPop(true); onClick(); }} onAnimationEnd={() => setPop(false)}
-      className={`flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-sm transition hover:scale-110 dark:bg-slate-900/90 ${className}`}>
-      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" className={pop ? "animate-pop" : ""}
-        fill={active ? "#ff5d73" : "none"} stroke={active ? "#ff5d73" : "currentColor"} strokeWidth="2" strokeLinejoin="round">
-        <path d="M12 20.5C6 16.3 3 13 3 9.2 3 6.7 5 5 7.2 5c1.9 0 3.5 1 4.8 2.9C13.300 6 14.900 5 16.800 5 19 5 21 6.700 21 9.200c0 3.800-3 7.100-9 11.300z" />
-      </svg>
-    </button>
+    <motion.button type="button" aria-pressed={active} aria-label={active ? `Remove ${title} from saved` : `Save ${title}`}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick(); }}
+      whileTap={{ scale: 0.88 }} transition={{ type: "spring", stiffness: 500, damping: 22 }}
+      className={`flex h-10 w-10 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-slate-100 ${className}`}>
+      <motion.span key={String(active)} initial={{ scale: active ? 0.7 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 420, damping: 16 }} className="flex">
+        <Heart size={20} weight={active ? "fill" : "regular"} aria-hidden="true" className={active ? "text-brand" : ""} />
+      </motion.span>
+    </motion.button>
   );
 }
 
-const COLORS = ["#6c3ce9", "#ff5d73", "#ffb703", "#19c79a", "#35b8f0"];
-
-/** A short burst of confetti. Renders nothing when the visitor prefers reduced motion. */
-export function Confetti({ pieces = 44 }) {
-  const [show, setShow] = useState(() => !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
-  useEffect(() => { const t = setTimeout(() => setShow(false), 3200); return () => clearTimeout(t); }, []);
-  if (!show) return null;
+/** A check that draws itself. The success moment after enrolling. */
+export function DrawnCheck({ size = 56 }) {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
-      {Array.from({ length: pieces }, (_, i) => (
-        <span key={i} className="absolute top-0 block animate-confetti rounded-sm"
-          style={{ left: `${(i * 97) % 100}%`, width: 8 + (i % 4) * 3, height: 12 + (i % 3) * 4, background: COLORS[i % COLORS.length],
-            animationDelay: `${(i % 11) * 90}ms`, "--dx": `${((i * 53) % 160) - 80}px`, "--rot": `${360 + ((i * 37) % 540)}deg` }} />
-      ))}
-    </div>
+    <span aria-hidden="true" className="inline-flex items-center justify-center rounded-full bg-brand-100 text-brand" style={{ width: size, height: size }}>
+      <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        <motion.path d="M5 12.5l4.5 4.5L19 7.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, ease: EASE, delay: 0.15 }} />
+      </svg>
+    </span>
   );
 }
 
 export function EmptyState({ title, children, action }) {
   return (
-    <div className="mx-auto max-w-md rounded-3xl border-2 border-dashed border-slate-300 bg-surface px-8 py-12 text-center">
-      <svg aria-hidden="true" width="64" height="64" viewBox="0 0 64 64" className="mx-auto mb-4 animate-float-slow">
-        <circle cx="32" cy="32" r="28" fill="#e7dfff" /><circle cx="24" cy="28" r="4" fill="#6c3ce9" /><circle cx="40" cy="28" r="4" fill="#6c3ce9" />
-        <path d="M22 42 Q32 34 42 42" stroke="#6c3ce9" strokeWidth="4" fill="none" strokeLinecap="round" />
-      </svg>
+    <div className="mx-auto max-w-md rounded-[var(--radius-card)] border border-dashed border-slate-300 px-8 py-12 text-center">
+      <BookOpen size={32} aria-hidden="true" className="mx-auto mb-4 text-slate-500" />
       <p className="font-display text-xl font-semibold">{title}</p>
       <div className="mt-2 text-sm text-slate-600">{children}</div>
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
+
+export { Check };
