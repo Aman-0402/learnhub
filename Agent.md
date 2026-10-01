@@ -134,6 +134,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Admin dashboard Phase 4 (approved by the owner): read-only staff API at `/api/manage/contact-messages/` (list, filter by handled/unhandled and search) plus `POST .../mark-handled/` and `.../mark-unhandled/` actions. Frontend: `/manage/contact`, an inbox-style list with a status filter, search and a toggle button per message. 9 new backend tests, 119 total pass; build green. |
 | 2026-10-01 | Admin dashboard Phase 5 (approved by the owner): read-only staff API at `/api/manage/users/` (list, filter by role, search) plus `POST .../set-role/`, gated by a new `IsSuperAdminRole` permission so only super admins can promote or demote; a super admin cannot remove their own role, so nobody can lock themselves out. Setting `role` syncs `is_staff`/`is_superuser` through the existing `User.save()` logic, so a promotion is real access, not just a label. Frontend: `/manage/users`, a table with a role filter, search and an inline role picker for super admins (a read-only badge for everyone else). 14 new backend tests, 133 total pass; build green. |
 | 2026-10-01 | Admin dashboard Phase 6 (approved by the owner): one aggregation endpoint, `GET /api/manage/overview/` (`config/manage_overview.py`), queries across accounts, courses, enrollments and contact directly, so the dashboard home is one request instead of five; it lives in `config/` rather than any single app since it legitimately spans all of them. Frontend: `/manage` is now the real overview (four stat tiles linking to their detail pages, plus the 5 most recent contact messages with an unhandled count) instead of a placeholder. 3 new backend tests, 136 total pass; build green. |
+| 2026-10-01 | Admin dashboard Phase 7, polish and audit (approved by the owner): permission audit confirmed every `/api/manage/` endpoint needs `IsStaffRole` (or the stricter `IsSuperAdminRole` for role changes), none relying on a project-wide default. Running the full suite on the **real MySQL database** (not the SQLite quick-run) caught a real bug the quick-run hid: `paid_at__year=`/`__month=` lookups extract from the stored UTC value on MySQL but convert to local time first on SQLite, so "this month" figures could be wrong near a month boundary; fixed with a proper date range (`enrollments.services.current_month_range()`, shared by the Phase 3 summary and Phase 6 overview). Also fixed by hand: the dashboard home's loading state now announces to screen readers like every other page, and a user's own disabled role picker explains why in the UI. 136 backend tests pass on MySQL; build green. README got an "Admin dashboard" section. **Known gap**: no automated axe-core scan ran (this environment has no browser tool) — see `PHASES.md` Phase 7 for what to check before calling this done. All 8 phases of the admin dashboard are now complete except that one check. |
 
 ## Status
 
@@ -147,7 +148,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Ink and emerald redesign: course discovery (filters, compare, saved), student dashboard (next class, progress, calendar), motion system
 - Contact form stored in the database (view it in Django admin)
 - Django admin for all models
-- Admin dashboard at `/manage` (staff/superadmin only): an overview home (stats, recent messages), courses/subjects/instructors CRUD, an enrollments & payments dashboard (mark paid/failed, revenue summary), a contact messages inbox and a user directory with role promote/demote (superadmin only) — Phases 0-6 of `PHASES.md`
+- Admin dashboard at `/manage` (staff/superadmin only): an overview home (stats, recent messages), courses/subjects/instructors CRUD, an enrollments & payments dashboard (mark paid/failed, revenue summary), a contact messages inbox and a user directory with role promote/demote (superadmin only) — all 7 phases of `PHASES.md` done except an automated accessibility scan (no browser tool in this environment)
 
 **Go-live checklist for Razorpay (owner action needed)**
 1. Create a Razorpay account and copy the **test** Key ID and Key Secret.
@@ -156,7 +157,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-1. Admin dashboard, built phase by phase from `PHASES.md` (Phases 0 to 6 done; Phase 7, polish and audit, is next). Each phase needs the owner's approval before it starts.
+1. Run an automated axe-core accessibility scan on the `/manage` admin dashboard (light and dark) — the one item Phase 7 could not do in this environment. All 7 phases of `PHASES.md` are otherwise complete.
 2. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
 3. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
 4. Production setup: Gunicorn, environment variables, static files, deployment

@@ -26,3 +26,15 @@ def mark_failed(enrollment):
 
 def batch_is_full(batch):
     return batch.seats is not None and batch.enrollments.filter(status=Enrollment.Status.PAID).count() >= batch.seats
+
+
+def current_month_range():
+    """Start (inclusive) and end (exclusive) of the current local month, as aware datetimes.
+
+    A plain `paid_at__year=`/`__month=` lookup extracts from the stored UTC value on MySQL
+    but converts to local time first on SQLite, so the two backends disagree near a month
+    boundary. A `gte`/`lt` range on the instant itself is backend-agnostic.
+    """
+    start = timezone.localtime(timezone.now()).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    end = start.replace(year=start.year + 1, month=1) if start.month == 12 else start.replace(month=start.month + 1)
+    return start, end

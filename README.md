@@ -14,6 +14,7 @@ A website to sell online and offline classes across multiple subjects. Students 
 - Django admin for subjects, courses, students and enrollments
 - Instructors, lessons and schedule, a contact form and change-password
 - Payments: **mock by default**. Razorpay is wired in (`backend/enrollments/payments.py`, webhook at `/api/payments/razorpay/webhook/`) and switches on with `PAYMENT_GATEWAY=razorpay` plus your keys in `backend/.env`. See `Agent.md` for the go-live checklist.
+- Admin dashboard at `/manage` (staff and super admin only, in the React app itself, separate from Django admin at `/admin`): courses, subjects and instructors CRUD; an enrollments and payments dashboard with mark-paid/mark-failed and a revenue summary; a contact messages inbox; a user directory with role promote/demote (super admin only); and an overview home. See `PHASES.md` for how it was built in phases.
 
 ## Frontend highlights
 Ink and emerald design (one accent, light and dark) with purposeful motion that respects reduced-motion settings, self-hosted fonts, instant course filters (subject, format, price, seats, sort), compare up to 3 courses, saved courses, recently viewed, next-class card, lesson progress and calendar export. Saved courses, recently viewed and lesson progress are stored in your browser only.
@@ -23,6 +24,9 @@ Course covers are typographic tiles and instructor avatars are monograms until r
 
 ## SEO
 Each page sets its own title, description, canonical link, sharing tags and (for courses, instructors and the home page) schema.org data. Private pages are marked noindex. `robots.txt` is generated at build time and `/sitemap.xml` comes from the backend. Set `VITE_SITE_URL` (frontend build) and `SITE_URL` (backend) to your real domain.
+
+## Admin dashboard
+`/manage` in the frontend is a staff-only area, separate from Django admin at `/admin`. Access is controlled by `User.role` (`student` / `staff` / `superadmin`), which stays in sync with Django's `is_staff`/`is_superuser`. `python manage.py createsuperuser` makes a `superadmin`; a super admin can then promote other accounts to `staff` or `superadmin` from `/manage/users`. Every `/manage` page talks to a staff-only API under `/api/manage/` (see `PHASES.md` for what each phase added).
 
 ## Run locally
 

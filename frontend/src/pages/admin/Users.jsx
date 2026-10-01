@@ -34,9 +34,11 @@ function RoleMenu({ u, me, onChanged }) {
         disabled={busy || (isSelf && u.role === "superadmin")}
         onChange={(e) => setRole(e.target.value)}
         aria-label={`Change role for ${u.full_name}`}
+        title={isSelf && u.role === "superadmin" ? "You cannot remove your own super admin access." : undefined}
       >
         {["student", "staff", "superadmin"].map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
       </select>
+      {isSelf && u.role === "superadmin" && <p className="text-xs text-slate-600">You cannot change your own role.</p>}
       {err && <div className="max-w-xs"><FormError>{err}</FormError></div>}
     </div>
   );

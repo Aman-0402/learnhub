@@ -103,11 +103,33 @@ placeholder) shows four stat tiles (students, active courses, pending enrollment
 revenue this month), each linking to its detail page, plus the 5 most recent contact
 messages with an unhandled count. 3 new backend tests pass (136 total); build green.
 
-## Phase 7: Polish and audit
-- [ ] Full permission audit across every new endpoint.
-- [ ] axe-core pass on all new admin pages (light + dark).
-- [ ] Backend test suite green on MySQL; frontend build green.
-- [ ] Update README with admin dashboard section.
+## Phase 7: Polish and audit (done, with one gap)
+- [x] Full permission audit across every new endpoint.
+- [ ] axe-core pass on all new admin pages (light + dark) — **not run**: this environment
+      has no browser automation tool, so it couldn't be done. See note below.
+- [x] Backend test suite green on MySQL; frontend build green.
+- [x] Update README with admin dashboard section.
+
+Permission audit: every `/api/manage/` endpoint was grepped and checked by hand —
+`courses`, `enrollments`, `contact` and the overview endpoint all require `IsStaffRole`;
+`accounts`'s `set-role` action is the only one gated by the stricter `IsSuperAdminRole`.
+No endpoint was found relying only on DRF's project-wide default permission. Running the
+full suite against the **real MySQL database** (not the SQLite quick-run) caught a real
+bug the SQLite run had hidden: `paid_at__year=`/`__month=` lookups extract from the
+stored UTC value on MySQL but convert to local time first on SQLite, so "this month"
+figures could be wrong near a month boundary. Fixed with a proper `gte`/`lt` date range
+(`enrollments.services.current_month_range()`), shared by the Phase 3 summary and the
+Phase 6 overview endpoint, since a range comparison on the instant is backend-agnostic.
+Also fixed while reviewing the new pages by hand: the dashboard home's loading state
+now announces to screen readers (it used a plain `animate-pulse` div before, not the
+`Loading`/`Skeleton` pattern every other page uses), and a user's own super-admin role
+picker explains in the UI and in a `title` why it's disabled instead of just graying out.
+**Gap**: no automated accessibility scan ran. The pages reuse components (`FormField`,
+`Dialog`, `ConfirmDialog`, table markup with `scope`/`caption`) already verified
+accessible in earlier phases, and this pass added labels, focus-visible states and
+screen-reader announcements by hand, but that is not the same as a browser-based
+axe-core run. Run one (e.g. the axe DevTools extension, or `jest-axe` in CI) before
+calling the admin dashboard done, in light and dark, including the role-disabled state.
 
 ---
 

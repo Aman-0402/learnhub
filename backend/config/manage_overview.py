@@ -4,7 +4,6 @@ Small aggregation across accounts, courses, enrollments and contact, so it lives
 outside any one app rather than bending an app boundary to hold it.
 """
 from django.db.models import Sum
-from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,15 +12,16 @@ from accounts.permissions import IsStaffRole
 from contact.models import ContactMessage
 from courses.models import Course
 from enrollments.models import Enrollment
+from enrollments.services import current_month_range
 
 
 class OverviewView(APIView):
     permission_classes = [IsStaffRole]
 
     def get(self, request):
-        now = timezone.now()
+        start, end = current_month_range()
         revenue_this_month = Enrollment.objects.filter(
-            status="paid", paid_at__year=now.year, paid_at__month=now.month,
+            status="paid", paid_at__gte=start, paid_at__lt=end,
         ).aggregate(v=Sum("amount"))["v"] or 0
         recent_messages = ContactMessage.objects.order_by("-created_at")[:5]
         return Response({

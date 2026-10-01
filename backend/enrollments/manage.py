@@ -1,6 +1,5 @@
 """Staff-only enrollments and payments API (mounted at /api/manage/)."""
 from django.db.models import Count, Q, Sum
-from django.utils import timezone
 from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,6 +8,7 @@ from accounts.permissions import IsStaffRole
 from courses.manage import ManagePagination
 
 from .models import Enrollment
+from .services import current_month_range
 from .services import mark_failed as mark_failed_service
 from .services import mark_paid as mark_paid_service
 
@@ -72,8 +72,8 @@ class EnrollmentManageViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"])
     def summary(self, request):
         paid = Enrollment.objects.filter(status="paid")
-        now = timezone.now()
-        this_month = paid.filter(paid_at__year=now.year, paid_at__month=now.month)
+        start, end = current_month_range()
+        this_month = paid.filter(paid_at__gte=start, paid_at__lt=end)
         by_course = (
             paid.values("course_id", "course__title")
             .annotate(paid_count=Count("id"), total=Sum("amount"))

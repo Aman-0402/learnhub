@@ -4,7 +4,7 @@ import { useFetch, useTitle } from "../../lib/hooks.js";
 import { manage } from "../../lib/manage.js";
 import { inr } from "../../components/CourseCard.jsx";
 import PageHeader, { Card } from "../../components/PageHeader.jsx";
-import { ErrorState } from "../../components/States.jsx";
+import { ErrorState, Loading, Skeleton } from "../../components/States.jsx";
 
 const dateStr = (d) => new Date(d).toLocaleDateString("en-IN", { dateStyle: "medium" });
 
@@ -21,7 +21,7 @@ export default function AdminHome() {
   return (
     <div>
       <PageHeader title="Overview" subtitle={`Signed in as ${user.email}.`} />
-      {loading && <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="card h-24 animate-pulse p-6" />)}</div>}
+      {loading && <Loading label="Loading overview"><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="card space-y-3 p-6"><Skeleton className="h-3 w-24" /><Skeleton className="h-8 w-16" /></div>)}</div></Loading>}
       {error && <ErrorState message={error} onRetry={reload} />}
       {data && (
         <>
