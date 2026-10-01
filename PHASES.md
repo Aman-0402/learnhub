@@ -74,9 +74,20 @@ Phase 3's enrollments endpoint: no create/update/delete, messages only get triag
 `/manage/contact`, an inbox-style list with a status filter, search and a toggle button
 per message. 9 new backend tests pass (119 total); build green.
 
-## Phase 5: Staff & student directory
-- [ ] Staff endpoint: list users, search, promote/demote `role` (superadmin only).
-- [ ] Admin page: directory with role badges and a promote/demote action.
+## Phase 5: Staff & student directory (done)
+- [x] Staff endpoint: list users, search, promote/demote `role` (superadmin only).
+- [x] Admin page: directory with role badges and a promote/demote action.
+
+Read-only `ReadOnlyModelViewSet` at `/api/manage/users/` — any staff can list and search
+(`q` on name/email, `role` filter), but `POST .../set-role/` is gated by a new
+`IsSuperAdminRole` permission (`accounts/permissions.py`). Setting `role` on the model
+syncs `is_staff`/`is_superuser` automatically (existing `save()` logic from Phase 0), so
+promoting someone to `staff` or `superadmin` immediately grants real Django and manage-API
+access, not just a label. A super admin cannot remove their own super admin role (one
+remaining check beyond the model: the view rejects it with 400), so nobody can lock
+themselves out of the directory. Frontend: `/manage/users`, a table with a role filter,
+search and an inline role `<select>` (super admins only; everyone else sees the role as
+a read-only badge). 14 new backend tests pass (133 total); build green.
 
 ## Phase 6: Dashboard home
 - [ ] Overview page: students count, active courses, pending enrollments, revenue

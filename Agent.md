@@ -132,6 +132,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Admin dashboard Phase 2 (approved by the owner): `/manage` screens for Courses (search, status filter, inline publish switch, create, edit, delete), Subjects and Instructors (dialog forms), with Batches and Lessons edited from the course page. Client checks mirror the backend rules and server errors show under the field; 409 delete advice shown in the confirm dialog. New `lib/manage.js`, `components/admin/Kit.jsx`, `pages/admin/*`. Full CRUD flow, validation, delete safety and axe (light and dark) checked in a browser; build, pre-flight 0 violations, 94 backend tests pass. |
 | 2026-10-01 | Admin dashboard Phase 3 (approved by the owner): read-only staff API at `/api/manage/enrollments/` (list, filter by status/course/search/date range) plus `POST .../mark-paid/` and `.../mark-failed/` actions that call the existing `services.mark_paid`/`mark_failed`, so receipts stay single-send and a paid enrollment can never be downgraded; `GET .../summary/` gives total paid, this month's paid, pending count and a per-course breakdown. Frontend: `/manage/enrollments` table with status filter, search, summary cards and inline mark-paid/mark-failed. 16 new backend tests, 126 total pass on MariaDB; build green; verified against the live backend with a real JWT login. |
 | 2026-10-01 | Admin dashboard Phase 4 (approved by the owner): read-only staff API at `/api/manage/contact-messages/` (list, filter by handled/unhandled and search) plus `POST .../mark-handled/` and `.../mark-unhandled/` actions. Frontend: `/manage/contact`, an inbox-style list with a status filter, search and a toggle button per message. 9 new backend tests, 119 total pass; build green. |
+| 2026-10-01 | Admin dashboard Phase 5 (approved by the owner): read-only staff API at `/api/manage/users/` (list, filter by role, search) plus `POST .../set-role/`, gated by a new `IsSuperAdminRole` permission so only super admins can promote or demote; a super admin cannot remove their own role, so nobody can lock themselves out. Setting `role` syncs `is_staff`/`is_superuser` through the existing `User.save()` logic, so a promotion is real access, not just a label. Frontend: `/manage/users`, a table with a role filter, search and an inline role picker for super admins (a read-only badge for everyone else). 14 new backend tests, 133 total pass; build green. |
 
 ## Status
 
@@ -145,7 +146,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Ink and emerald redesign: course discovery (filters, compare, saved), student dashboard (next class, progress, calendar), motion system
 - Contact form stored in the database (view it in Django admin)
 - Django admin for all models
-- Admin dashboard at `/manage` (staff/superadmin only): courses, subjects, instructors CRUD, an enrollments & payments dashboard (mark paid/failed, revenue summary) and a contact messages inbox — Phases 0-4 of `PHASES.md`
+- Admin dashboard at `/manage` (staff/superadmin only): courses, subjects, instructors CRUD, an enrollments & payments dashboard (mark paid/failed, revenue summary), a contact messages inbox and a user directory with role promote/demote (superadmin only) — Phases 0-5 of `PHASES.md`
 
 **Go-live checklist for Razorpay (owner action needed)**
 1. Create a Razorpay account and copy the **test** Key ID and Key Secret.
@@ -154,7 +155,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-1. Admin dashboard, built phase by phase from `PHASES.md` (Phases 0 to 4 done; Phase 5, the staff/student directory, is next). Each phase needs the owner's approval before it starts.
+1. Admin dashboard, built phase by phase from `PHASES.md` (Phases 0 to 5 done; Phase 6, the dashboard home overview, is next). Each phase needs the owner's approval before it starts.
 2. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
 3. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
 4. Production setup: Gunicorn, environment variables, static files, deployment

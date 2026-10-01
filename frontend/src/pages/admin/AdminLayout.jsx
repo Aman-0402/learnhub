@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { motion } from "motion/react";
-import { SquaresFour, ArrowLeft, BookOpen, Tag, ChalkboardTeacher, Receipt, Envelope } from "@phosphor-icons/react";
+import { SquaresFour, ArrowLeft, BookOpen, Tag, ChalkboardTeacher, Receipt, Envelope, Users } from "@phosphor-icons/react";
 import { useTitle } from "../../lib/hooks.js";
 import { useAuth } from "../../lib/auth.jsx";
 
@@ -12,6 +12,7 @@ const LINKS = [
   { to: "/manage/instructors", label: "Instructors", icon: ChalkboardTeacher },
   { to: "/manage/enrollments", label: "Enrollments", icon: Receipt },
   { to: "/manage/contact", label: "Contact messages", icon: Envelope },
+  { to: "/manage/users", label: "Users", icon: Users },
 ];
 
 const item = ({ isActive }) =>

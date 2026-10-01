@@ -33,6 +33,7 @@ const AdminSubjects = lazy(() => import("./pages/admin/Subjects.jsx"));
 const AdminInstructors = lazy(() => import("./pages/admin/Instructors.jsx"));
 const AdminEnrollments = lazy(() => import("./pages/admin/Enrollments.jsx"));
 const AdminContactMessages = lazy(() => import("./pages/admin/ContactMessages.jsx"));
+const AdminUsers = lazy(() => import("./pages/admin/Users.jsx"));
 const Saved = lazy(() => import("./pages/Saved.jsx"));
 const Compare = lazy(() => import("./pages/Compare.jsx"));
 import { useTitle } from "./lib/hooks.js";
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="instructors" element={<AdminInstructors />} />
             <Route path="enrollments" element={<AdminEnrollments />} />
             <Route path="contact" element={<AdminContactMessages />} />
+            <Route path="users" element={<AdminUsers />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
