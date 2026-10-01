@@ -2,52 +2,79 @@ import { useTitle } from "../lib/hooks.js";
 import { OWNER } from "../lib/site.js";
 import { Avatar } from "../components/Media.jsx";
 import { Reveal } from "../components/Fun.jsx";
-import { ArrowUpRight, GithubLogo, EnvelopeSimple } from "@phosphor-icons/react";
+import { ArrowUpRight, GithubLogo, EnvelopeSimple, LinkedinLogo, Code } from "@phosphor-icons/react";
 
 const ROLES = [
-  ["AI Trainer", "CodedevH", "Aug 2026 to now", "Teaching at Allenhouse Institute of Technology & Business School and developing AI models."],
-  ["Senior IT Trainer", "Ethnotech Academy", "Jul 2025 to Jun 2026", "Taught IT courses to students."],
+  ["AI Trainer", "CodedevH · Allenhouse Institute of Technology & Business School", "Aug 2026 to now", "Delivering applied AI training and developing AI models, translating model-building workflows into structured learning material."],
+  ["Sr. IT Trainer", "Ethnotech Academic Solutions · Parul University", "Jul 2025 to Jun 2026", "Designed and delivered training across HTML/CSS, JavaScript, Python, Django, Flask, Statistics, AWS and Networking for 2000+ students. Built a Generative AI curriculum module and mentored capstone projects."],
+  ["Technical Trainer", "Anuratech Solutions · Parul University", "Apr 2025 to Jun 2025", "Led design, deployment and maintenance of enterprise IT infrastructure supporting academic and training platforms."],
+  ["Machine Learning Trainer", "Databits Technologia", "Aug 2024 to Mar 2025", "Developed and deployed ML models for predictive analytics; built automated training pipelines with Python, TensorFlow and scikit-learn."],
+  ["Technical Trainer, Python Full Stack", "Malla Reddy College, Hyderabad", "May 2024 to Jul 2024", "Delivered structured Python Full Stack training covering core Python, HTML/CSS, JavaScript and frontend/backend integration."],
+  ["Full Stack Intern", "ARX Infotech", "Aug 2023 to Feb 2024", "Built full-stack web apps with Python, Django and DRF; responsive frontends integrated with REST APIs; collaborated on MySQL database design and deployment."],
 ];
 
 const SKILLS = [
-  ["Frontend", ["React", "Next.js", "TypeScript", "Tailwind CSS"]],
-  ["Backend", ["Django", "Django REST Framework", "Node.js", "WebSockets", "Celery", "Redis"]],
-  ["Data and cloud", ["MySQL", "PostgreSQL", "AWS"]],
-  ["Growing focus", ["AI / ML", "Generative AI"]],
+  ["Frontend", ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Bootstrap", "Redux Toolkit", "Zustand"]],
+  ["Backend", ["Django", "Django REST Framework", "Django Channels", "Node.js", "Express.js", "Flask"]],
+  ["Database", ["MySQL", "PostgreSQL", "MongoDB", "Prisma", "Redis"]],
+  ["AI / Generative AI", ["Machine Learning", "Deep Learning", "Prompt Engineering", "Context Engineering", "LLM Integration (Claude API, NVIDIA NIM)", "Agentic AI (Claude Code)"]],
+  ["Data Science", ["NumPy", "Pandas", "Matplotlib", "Scikit-learn"]],
+  ["Cloud & Tools", ["Git", "GitHub", "AWS", "VS Code", "Postman", "Jupyter Notebook"]],
 ];
 
 const PROJECTS = [
-  { name: "Certibyt", what: "Multi-tenant SaaS exam and proctoring platform with tab-switch detection, webcam monitoring, real-time sessions and JWT auth. 186 automated tests across 7 Django apps.", stack: "Django, React (Vite)", link: "https://certibyt.com", label: "certibyt.com" },
-  { name: "ConsultMe", what: "Real-time consultancy marketplace with WebSocket chat and escrow payments.", stack: "Real-time, Payments", link: "https://consultmee.in", label: "consultmee.in" },
-  { name: "ClassPulse", what: "Smart attendance: students scan a QR code that rotates every 15 seconds, so screenshots cannot be shared for proxy attendance.", stack: "React, Django, MySQL", link: "https://github.com/Aman-0402/ClassPulse", label: "View on GitHub" },
+  { name: "Certibyt", what: "Multi-tenant SaaS exam and certification platform with Super Admin, Org Admin and Candidate portals and full tenant isolation. Proctored exam engine with tab-switch detection, webcam monitoring and question shuffling. Voucher commerce, PDF certificates and public verification. 186 automated tests across 7 apps.", stack: "Django, React, Redux Toolkit, MariaDB, ReportLab, JWT", link: "https://certibyt.com", label: "certibyt.com" },
+  { name: "ConsultME", what: "Multi-role consultancy marketplace (Client, Freelancer, Consultant, Admin) with real-time WebSocket chat and an escrow payment system (platform fee, GST, convenience fee) that locks funds on booking and releases on completion.", stack: "Django, DRF, React, Redis, Celery, Django Channels", link: "https://consultmee.in", label: "consultmee.in" },
+  { name: "ClassPulse", what: "Real-time attendance system: students scan a QR code that auto-rotates every 15 seconds so screenshots go stale instantly. Server-side scan validation, suspicious-activity detection and a live teacher dashboard pushed over WebSocket.", stack: "React, Bootstrap 5, Django, Django Channels, MySQL", link: "https://github.com/Aman-0402/ClassPulse", label: "View on GitHub" },
+  { name: "UrbanEase", what: "Hyperlocal service marketplace with geolocation-based provider discovery (Haversine proximity sorting), a full booking lifecycle with audit-log timeline, and role-specific dashboards for Customer, Provider and Admin.", stack: "Django, DRF, React, MySQL, JWT, Zustand", link: "https://github.com/Aman-0402/UrbanEase", label: "View on GitHub" },
   { name: "LearnHub", what: "This site: sell online and offline classes, with batches, timetables, payments and a student area.", stack: "React, Tailwind, Django, MySQL" },
-  { name: "ARX Infotech website", what: "Corporate website rebuild with a React frontend and Django backend.", stack: "React, Django" },
+];
+
+const EDUCATION = [
+  ["B.Tech, Computer Science & Engineering", "Sambalpur University Institute of Information Technology, Odisha", "CGPA 7.86 / 10"],
+  ["Class XII, CBSE", "Guru Gobind Singh Public School, Bokaro Steel City", "76%"],
+  ["Class X, CBSE", "Guru Gobind Singh Public School, Bokaro Steel City", "CGPA 10 / 10"],
+];
+
+const CERTIFICATIONS = [
+  "AWS Certified Data Engineer — Amazon Web Services",
+  "Python for Data Science — IBM",
+  "Statistics for Data Science — IBM",
+  "HTML, CSS & JavaScript — Pearson",
+  "Machine Learning with Python A-Z — Udemy",
+  "AI Essentials: Introduction to Artificial Intelligence — Udemy",
+  "AWS Essentials: A Complete Beginner's Guide — Udemy",
+  "JavaScript Programming: From Novice to Expert — Udemy",
+  "Information Security Fundamentals — Udemy",
+  "Oracle Agentic AI Certified",
 ];
 
 const H = ({ id, children }) => <h2 id={id} className="mb-6 text-3xl font-semibold sm:text-4xl">{children}</h2>;
 
 export default function Portfolio() {
   useTitle("About me", {
-    description: "Aman Raj is a Full-Stack Developer and IT Trainer in Vadodara building React and Django products and teaching web development and AI.",
+    description: "Aman Raj is an AI & Full-Stack Trainer and Full-Stack Developer in Vadodara, with 2000+ students trained and real-world products built across Django, React and Generative AI.",
     type: "profile",
-    jsonLd: { "@context": "https://schema.org", "@type": "Person", name: OWNER.name, jobTitle: "Full-Stack Developer and IT Trainer", address: { "@type": "PostalAddress", addressLocality: "Vadodara", addressRegion: "Gujarat", addressCountry: "IN" }, sameAs: [OWNER.github] },
+    jsonLd: { "@context": "https://schema.org", "@type": "Person", name: OWNER.name, jobTitle: "AI & Full-Stack Trainer · Full-Stack Developer", address: { "@type": "PostalAddress", addressLocality: "Vadodara", addressRegion: "Gujarat", addressCountry: "IN" }, sameAs: [OWNER.github, OWNER.linkedin, OWNER.leetcode].filter(Boolean) },
   });
   return (
     <div className="grid gap-16 lg:grid-cols-[22rem_1fr] lg:gap-20">
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <Avatar name={OWNER.name} size="h-24 w-24" text="text-3xl" />
         <h1 className="mt-6 text-5xl font-semibold leading-none">{OWNER.name}</h1>
-        <p className="mt-4 text-lg text-slate-700">Full-Stack Developer and IT Trainer in Vadodara, Gujarat. I build web products and teach people how to build them.</p>
+        <p className="mt-4 text-lg text-slate-700">AI & Full-Stack Trainer and Full-Stack Developer in Vadodara, Gujarat. 2000+ students trained across leading universities; real-world products shipped in Django, React and Generative AI.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <a href="#contact" className="btn btn-primary"><EnvelopeSimple size={18} aria-hidden="true" />Get in touch</a>
           <a href={OWNER.github} target="_blank" rel="noopener noreferrer" className="btn btn-quiet"><GithubLogo size={18} aria-hidden="true" />GitHub<span className="sr-only"> (opens in a new tab)</span></a>
+          {OWNER.linkedin && <a href={OWNER.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-quiet"><LinkedinLogo size={18} aria-hidden="true" />LinkedIn<span className="sr-only"> (opens in a new tab)</span></a>}
+          {OWNER.leetcode && <a href={OWNER.leetcode} target="_blank" rel="noopener noreferrer" className="btn btn-quiet"><Code size={18} aria-hidden="true" />LeetCode<span className="sr-only"> (opens in a new tab)</span></a>}
         </div>
       </aside>
 
       <div className="min-w-0 space-y-20">
         <section aria-labelledby="about">
           <H id="about">About me</H>
-          <p className="max-w-2xl text-lg text-slate-700">I am from Bokaro Steel City and now based in Vadodara. I hold a B.Tech in Computer Science and Engineering from Sambalpur University Institute of Information Technology (2024, CGPA 7.86). I have always mixed building and teaching, and I take on freelance and client web work for local businesses alongside my main role. These days I am putting more of my time into AI and generative AI.</p>
+          <p className="max-w-2xl text-lg text-slate-700">I am from Bokaro Steel City and now based in Vadodara. I hold a B.Tech in Computer Science and Engineering from Sambalpur University Institute of Information Technology (CGPA 7.86). Over 3 years of combined industry and training experience: designing full-stack, AI/ML and cloud curricula for 2000+ students at leading universities, backed by real-world development across MERN, Django and Generative AI systems.</p>
         </section>
 
         <section aria-labelledby="work">
@@ -90,11 +117,34 @@ export default function Portfolio() {
           </ul>
         </section>
 
+        <section aria-labelledby="education">
+          <H id="education">Education</H>
+          <ul className="border-t border-slate-200">
+            {EDUCATION.map(([degree, school, mark], i) => (
+              <Reveal as="li" key={degree} delay={i * 70} className="grid gap-2 border-b border-slate-200 py-6 sm:grid-cols-[1fr_2fr] sm:gap-8">
+                <h3 className="text-xl font-semibold">{degree}</h3>
+                <div className="flex flex-wrap items-baseline justify-between gap-2 text-slate-700">
+                  <p>{school}</p>
+                  <p className="num text-sm text-slate-600">{mark}</p>
+                </div>
+              </Reveal>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="certifications">
+          <H id="certifications">Certifications and training</H>
+          <dl className="border-t border-slate-200 py-5">
+            <dd className="text-sm leading-7 text-slate-700">{CERTIFICATIONS.join(" · ")}</dd>
+          </dl>
+        </section>
+
         <section id="contact" aria-labelledby="contact-h" className="border-t border-slate-900 pt-10">
           <h2 id="contact-h" className="max-w-lg text-4xl font-semibold sm:text-5xl">Need a website, a web app or a trainer?</h2>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href={`mailto:${OWNER.email}`} className="btn btn-primary">Email me</a>
             <a href={OWNER.github} target="_blank" rel="noopener noreferrer" className="btn btn-quiet">GitHub<span className="sr-only"> (opens in a new tab)</span></a>
+            {OWNER.linkedin && <a href={OWNER.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-quiet">LinkedIn<span className="sr-only"> (opens in a new tab)</span></a>}
           </div>
         </section>
       </div>

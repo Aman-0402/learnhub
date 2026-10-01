@@ -13,6 +13,10 @@ export const SITE = {
 // Owner details for the portfolio page. Replace the email with the one you want visitors to use.
 export const OWNER = {
   name: "Aman Raj",
-  email: "your-email@example.com",
+  email: "think.like.ai.aman@gmail.com",
   github: "https://github.com/Aman-0402",
+  linkedin: "", // TODO: paste your LinkedIn profile URL
+  leetcode: "", // TODO: paste your LeetCode profile URL
+  phone: "+91 98521 04967",
+  location: "Vadodara, Gujarat",
 };
