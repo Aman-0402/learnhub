@@ -30,11 +30,13 @@ and both files are committed and pushed together.
 
 Role and flags stay in sync in `User.save()`: if `role` is changed in code it wins and `is_staff` / `is_superuser` follow; otherwise the flags win (so `createsuperuser` and the Django admin checkboxes still set the right role). `role` is read-only on `/api/auth/me/`.
 
-## Phase 1: Admin API layer
-- [ ] Staff-only DRF endpoints for `Course`, `Subject`, `Instructor`, `Batch`, `Lesson`:
+## Phase 1: Admin API layer (done)
+- [x] Staff-only DRF endpoints for `Course`, `Subject`, `Instructor`, `Batch`, `Lesson`:
       list/create/update/delete. New `IsStaffRole` permission class.
-- [ ] Reuse existing serializers where possible; add write-enabled variants.
-- [ ] Tests: staff can CRUD, student gets 403, unauthenticated gets 401.
+- [x] Reuse existing serializers where possible; add write-enabled variants.
+- [x] Tests: staff can CRUD, student gets 403, unauthenticated gets 401.
+
+Mounted at `/api/manage/{subjects,instructors,courses,batches,lessons}/` (code in `courses/manage.py` and `courses/manage_urls.py`, permission in `accounts/permissions.py`). Lists are paginated (50 per page, `?page_size=` up to 200) and include unpublished and inactive items. Filters: courses `?q=&subject=&published=true|false`, batches and lessons `?course=<id>`. Rules: offline and hybrid courses need a location, fee is not negative, seats cannot drop below the paid count, batch days are a list in week order and end time must be after start time. Deleting a subject or a course with enrollments returns 409 (unpublish the course instead); deleting an instructor keeps their courses; deleting a batch keeps its enrollments. Slugs are generated once and never change when a title is edited, so public links stay stable.
 
 ## Phase 2: Courses, subjects, instructors UI
 - [ ] Admin pages: Courses (list, create, edit, publish toggle, delete), Subjects,

@@ -54,6 +54,7 @@ cd frontend && npm install && npm run dev   # site on :5173, proxies /api to :80
 Auth: `POST /api/auth/register|login|refresh/`, `GET/PATCH /api/auth/me/`, `POST /api/auth/change-password/`, `POST /api/auth/password-reset/` and `/password-reset/confirm/`
 Public: `GET /api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/`, `/api/instructors/`, `/api/instructors/<slug>/`, `/api/courses/<slug>/batches/`, `POST /api/contact/`
 Payments: `GET /api/payments/config/` (active gateway), `POST /api/payments/razorpay/webhook/` (called by Razorpay)
+Staff (role staff or superadmin; 401 anonymous, 403 students): `/api/manage/{subjects,instructors,courses,batches,lessons}/` full CRUD, paginated, including unpublished items. See `PHASES.md` for the rules.
 Student: `POST /api/enroll/`, `POST /api/enrollments/<ref>/pay/`, `GET /api/my-courses/`, `GET /api/courses/<slug>/lessons/` (paid students and staff only)
 
 ## Frontend feature switches
@@ -127,6 +128,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Portfolio content refreshed from the owner's latest resume (all 6 roles, full skill groups, 4 real shipped projects with live/GitHub links, education, certifications), real photo added (replacing the monogram avatar), marks/CGPA removed from education for privacy, Achievements section added (students trained, years experience, certifications, platforms shipped, tests written) styled to match the ink/emerald system rather than generic badge icons, and hero polish (stagger entrance motion, location tag, accent ring on the avatar). Local dev environment set up (Python venv, MySQL migrate + seed, both dev servers running). A superuser (`learnhubadmin@learnhub.com`) was created for Django admin access at `/admin` — the frontend has no separate admin dashboard yet. |
 | 2026-10-01 | Wrote `PHASES.md`: a phased plan for a proper in-frontend admin dashboard (today only Django admin at `/admin` exists; the React app has zero staff-only pages or API endpoints, and `User` has no `role` field). Phases: 0 foundations (role field, RequireStaff guard, admin shell), 1 staff-only DRF API, 2 courses/subjects/instructors UI, 3 enrollments & payments dashboard, 4 contact inbox, 5 staff/student directory, 6 dashboard home, 7 polish and audit. Each phase needs the owner's approval before work starts. |
 | 2026-10-01 | Admin dashboard Phase 0 (approved by the owner): `User.role` with migration and backfill (existing superuser became `superadmin`), role and Django flags kept in sync in `save()`, `role` returned by `/api/auth/me/` (read-only), `RequireStaff` guard and `/manage` admin shell with sidebar and a navbar link shown only to staff. Frontend path is `/manage` because `/admin` is Django admin. Also replaced em dashes in the owner's portfolio certificate list. 73 backend tests pass (6 new); build, pre-flight 0 violations; staff, student and anonymous access and axe (light, dark) checked in a browser. |
+| 2026-10-01 | Admin dashboard Phase 1 (approved by the owner): staff-only DRF API at `/api/manage/` for subjects, instructors, courses, batches and lessons (`IsStaffRole` permission, write serializers with validation, counts of paid and total enrollments, filters, pagination). Deleting protected items returns 409 with advice to unpublish. 21 new tests cover 401 for anonymous, 403 for students, staff CRUD, validation and delete safety; 94 backend tests pass on MariaDB. No frontend changes. |
 
 ## Status
 
@@ -148,7 +150,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-1. Admin dashboard, built phase by phase from `PHASES.md` (Phase 0 done; Phase 1, the staff-only API, is next). Each phase needs the owner's approval before it starts.
+1. Admin dashboard, built phase by phase from `PHASES.md` (Phases 0 and 1 done; Phase 2, the courses, subjects and instructors screens, is next). Each phase needs the owner's approval before it starts.
 2. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
 3. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
 4. Production setup: Gunicorn, environment variables, static files, deployment
