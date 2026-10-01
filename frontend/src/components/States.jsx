@@ -1,5 +1,5 @@
 export function Skeleton({ className = "" }) {
-  return <div aria-hidden="true" className={`animate-pulse rounded-md bg-slate-200 ${className}`} />;
+  return <div aria-hidden="true" className={`animate-shimmer rounded-xl bg-slate-200 ${className}`} />;
 }
 
 /** Announces "Loading" to screen readers while skeletons are shown. */
@@ -12,8 +12,8 @@ export function CardGridSkeleton({ count = 3 }) {
     <Loading label="Loading courses">
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="overflow-hidden rounded-xl border border-slate-200 bg-surface shadow-sm">
-            <Skeleton className="h-32 rounded-none" />
+          <div key={i} className="overflow-hidden rounded-3xl border border-slate-200 bg-surface shadow-sm">
+            <Skeleton className="h-36 rounded-none" />
             <div className="space-y-3 p-5">
               <Skeleton className="h-3 w-1/3" /><Skeleton className="h-5 w-3/4" /><Skeleton className="h-3 w-full" /><Skeleton className="h-3 w-2/3" />
             </div>
@@ -54,7 +54,7 @@ export function DetailSkeleton() {
 export function ErrorState({ message, onRetry, status }) {
   const notFound = status === 404;
   return (
-    <div role="alert" className="mx-auto max-w-md rounded-xl border border-slate-200 bg-surface p-8 text-center shadow-sm">
+    <div role="alert" className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-surface p-8 text-center shadow-sm">
       <p className="text-lg font-semibold">{notFound ? "We could not find that" : "Something went wrong"}</p>
       <p className="mt-2 text-sm text-slate-600">{message}</p>
       {onRetry && !notFound && (

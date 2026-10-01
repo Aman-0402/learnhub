@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
@@ -22,6 +22,8 @@ import Learn from "./pages/Learn.jsx";
 import Payments from "./pages/Payments.jsx";
 import Receipt from "./pages/Receipt.jsx";
 import Profile from "./pages/Profile.jsx";
+import Saved from "./pages/Saved.jsx";
+import Compare from "./pages/Compare.jsx";
 import { useTitle } from "./lib/hooks.js";
 
 const guard = (el) => <RequireAuth>{el}</RequireAuth>;
@@ -32,16 +34,20 @@ function NotFound() {
 }
 
 export default function App() {
+  const { pathname } = useLocation();
   return (
     <div className="flex min-h-screen flex-col">
       <a href="#main" className="sr-only z-50 rounded-lg bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
       <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 outline-none">
+        <div key={pathname} className="animate-fade-up">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:slug" element={<CourseDetail />} />
+          <Route path="/saved" element={<Saved />} />
+          <Route path="/compare" element={<Compare />} />
           <Route path="/instructors" element={<Instructors />} />
           <Route path="/instructors/:slug" element={<InstructorDetail />} />
           <Route path="/about" element={<About />} />
@@ -60,6 +66,7 @@ export default function App() {
           <Route path="/profile" element={guard(<Profile />)} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </div>
       </main>
       <Footer />
     </div>

@@ -88,6 +88,12 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Accessibility baseline: skip link, focus ring (base layer), route changes move focus to `<main>`, keyboard-navigable tabs, labelled forms and tables. Verified with axe-core on every page in light and dark (0 violations). Keep it that way.
 - After a deliberate logout, protected pages send the user home (not to login). See `RequireAuth` and `AuthProvider.loggedOut`.
 
+- Playful redesign: colours are tokens in `index.css` (`brand`, `coral`, `sun`, `mint`, `sky`, plus semantic `surface`, `brand`, `brand-strong`). On white pills and buttons over gradients use a fixed dark text colour (not `text-slate-900` or `text-brand-strong`, which dark mode remaps to light). Fonts load from Google Fonts (Fredoka for headings, Nunito for body).
+- Course list: the Courses, Home, Saved and Compare pages load every course once through `lib/catalog.js` (`fetchAllCourses`, pages through `/api/courses/`) and filter in the browser. Fine for a small catalog; move filtering back to the API if the catalog grows to hundreds.
+- Device-only data (`lib/store.js`): saved courses, recently viewed, compare picks (session only) and lesson completion live in this browser's storage, are labelled "saved on this device", and are not linked to the account. A backend progress endpoint would be needed to sync them.
+- Stretched card links: interactive controls on a `CourseCard` (heart, compare checkbox) need `relative z-10` or the title link's overlay covers them.
+- Admin login is by email (`USER_NAME_FIELD=email`). Create the admin with `python manage.py createsuperuser`; credentials are never committed.
+
 ## Progress log
 
 | Date | What happened |
@@ -99,6 +105,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Frontend round 2: password reset pages, batch picker and weekly timetable, course and instructor images (generated placeholders), printable receipt, dark mode, loading skeletons and error states, accessibility pass. Password reset and batches run on sample data behind `features.js` switches. axe-core: 0 violations on all pages, light and dark; full flow verified in a browser. |
 | 2026-10-01 | Backend for the two sample features: password reset by email (request + confirm, console email in dev, SMTP via env, rate limited) and batches (model, endpoint, batch on enrollment with seat limits, admin, seed data). Frontend switches turned on. 57 backend tests pass on MySQL; real reset email, real batches, seat limits and accessibility verified in a browser against the live backend. |
 | 2026-10-01 | Razorpay structure added (off by default): `RazorpayGateway`, signature verification, webhook endpoint, `gateway_order_id`, `/api/payments/config/`, frontend `lib/razorpay.js` and Checkout hook. 38 backend tests pass; mock and stubbed-Razorpay checkout verified in a browser. Not yet tested with real Razorpay keys. |
+| 2026-10-01 | Frontend upgrade (playful look, real API only): purple/coral/sun/mint palette and Fredoka + Nunito fonts, colourful Home (stats, subject tiles, how it works, instructors), Courses page with instant filters (subject chips, format, price, seats available, sort, pagination, URL synced), compare (up to 3) and Saved pages, recently viewed, similar courses, next-class card, lesson checkboxes with progress bars, add-to-calendar (.ics), confetti on enrollment, scroll-reveal and page fade (respect reduced motion). axe-core 0 violations on all pages, light and dark; 57 backend tests pass; flow verified in a browser. |
 
 ## Status
 
@@ -108,6 +115,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Course catalog with subject / format / search filters
 - Instructors (list and profile pages), lessons, schedule
 - Enrollment and checkout with seat limits (mock payment), payment history
+- Playful redesign: course discovery (filters, compare, saved), student dashboard (next class, progress, calendar)
 - Contact form stored in the database (view it in Django admin)
 - Django admin for all models
 

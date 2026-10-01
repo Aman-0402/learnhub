@@ -7,6 +7,9 @@ import { ModeBadge } from "../components/CourseCard.jsx";
 import { CourseThumb } from "../components/Media.jsx";
 import { Timetable } from "../components/Batches.jsx";
 import { Card } from "../components/PageHeader.jsx";
+import { ProgressBar } from "../components/Fun.jsx";
+import { useProgress } from "../lib/store.js";
+import { buildICS, downloadICS } from "../lib/ics.js";
 import { DetailSkeleton, ErrorState } from "../components/States.jsx";
 
 const TABS = ["Overview", "Timetable", "Lessons"];
@@ -16,6 +19,7 @@ export default function Learn() {
   const { slug } = useParams();
   const [tab, setTab] = useState("Overview");
   const tabRefs = useRef({});
+  const prog = useProgress();
   const { data, error, status, loading, reload } = useFetch(async () => {
     const list = await api("/my-courses/");
     const enrollment = list.find((e) => e.course.slug === slug) || null;
@@ -40,6 +44,10 @@ export default function Learn() {
   const c = enrollment.course;
   const batch = enrollment.batch || (isSample("batchesApi") ? chosenBatch.get(slug) : null);
   const sessions = lessons.filter((l) => l.session_at);
+  const doneIds = prog.done(slug).filter((id) => lessons.some((l) => l.id === id));
+  const pct = lessons.length ? (doneIds.length / lessons.length) * 100 : 0;
+  const canCal = Boolean(batch || sessions.length);
+  const addToCalendar = () => downloadICS(`${slug}.ics`, buildICS({ course: c, batch, sessions }));
   const detail = [
     ["Instructor", c.instructor], ["Format", c.mode_display], ["Duration", `${c.duration_weeks} weeks`],
     ["Starts", c.start_date && new Date(c.start_date).toLocaleDateString("en-IN", { dateStyle: "long" })], ["Location", c.location],
@@ -61,10 +69,16 @@ export default function Learn() {
         <h1 className="text-3xl font-bold tracking-tight">{c.title}</h1>
         <ModeBadge mode={c.mode} label={c.mode_display} />
       </div>
+      {lessons.length > 0 && (
+        <div className="mb-6 max-w-md">
+          <p className="mb-1 text-sm font-bold">{doneIds.length} of {lessons.length} lessons done <span className="font-normal text-slate-600">· saved on this device</span></p>
+          <ProgressBar value={pct} label="Lesson progress" />
+        </div>
+      )}
       <div className="mb-6 flex gap-1 border-b border-slate-200" role="tablist" aria-label="Course sections" onKeyDown={onKey}>
         {TABS.map((t) => (
           <button key={t} ref={(el) => (tabRefs.current[t] = el)} role="tab" id={`tab-${t}`} aria-selected={tab === t} aria-controls={`panel-${t}`} tabIndex={tab === t ? 0 : -1} onClick={() => setTab(t)}
-            className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${tab === t ? "border-brand-600 text-brand" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{t}</button>
+            className={`-mb-px border-b-4 px-4 py-2 text-sm font-bold ${tab === t ? "border-brand-600 text-brand" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{t}</button>
         ))}
       </div>
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
@@ -80,6 +94,7 @@ export default function Learn() {
         {tab === "Timetable" && (
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
+              {canCal && <button onClick={addToCalendar} className="mb-4 rounded-full border-2 border-brand-600 px-4 py-1.5 text-sm font-bold text-brand hover:bg-brand-50">Add to calendar</button>}
               {batch ? <Timetable batch={batch} /> : (
                 <p className="text-slate-600">{c.start_date ? `Classes begin on ${new Date(c.start_date).toLocaleDateString("en-IN", { dateStyle: "full" })}.` : "The start date has not been announced yet."} Your weekly timetable appears here once a batch is assigned.</p>
               )}
@@ -99,6 +114,7 @@ export default function Learn() {
             <ol className="space-y-3">
               {lessons.map((l, i) => (
                 <li key={l.id}><Card className="flex items-start gap-4 !p-4">
+                  <input type="checkbox" aria-label={`Mark "${l.title}" as done`} checked={doneIds.includes(l.id)} onChange={() => prog.toggle(slug, l.id)} className="mt-1 h-5 w-5 shrink-0 accent-brand-600" />
                   <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-strong">{i + 1}</span>
                   <div className="flex-1">
                     <p className="font-medium">{l.title}</p>

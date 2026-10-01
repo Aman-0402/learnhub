@@ -28,7 +28,7 @@ export async function payWithRazorpay({ order, title, user }) {
       name: "LearnHub",
       description: title,
       prefill: { name: user.full_name, email: user.email, contact: user.phone || undefined },
-      theme: { color: "#4f46e5" },
+      theme: { color: "#6c3ce9" },
       handler: resolve,
       modal: { ondismiss: () => reject(new Error("Payment was cancelled.")) },
     });

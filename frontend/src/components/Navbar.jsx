@@ -3,13 +3,15 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth.jsx";
 import { SITE } from "../lib/site.js";
 import ThemeToggle from "./ThemeToggle.jsx";
+import { useWishlist } from "../lib/store.js";
 
 const link = ({ isActive }) =>
-  `text-sm font-medium ${isActive ? "text-brand" : "text-slate-600 hover:text-slate-900"}`;
+  `text-sm font-bold ${isActive ? "text-brand" : "text-slate-600 hover:text-slate-900"}`;
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
+  const saved = useWishlist().slugs.length;
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   useEffect(() => {
@@ -23,6 +25,7 @@ export default function Navbar() {
     <>
       <NavLink to="/courses" className={link} onClick={close}>Courses</NavLink>
       <NavLink to="/instructors" className={link} onClick={close}>Instructors</NavLink>
+      <NavLink to="/saved" className={link} onClick={close}>Saved{saved > 0 && <span className="ml-1.5 rounded-full bg-coral px-1.5 py-0.5 text-xs font-bold text-white"><span className="sr-only"> </span>{saved}</span>}</NavLink>
       <NavLink to="/about" className={link} onClick={close}>About</NavLink>
       <NavLink to="/faq" className={link} onClick={close}>FAQ</NavLink>
       <NavLink to="/contact" className={link} onClick={close}>Contact</NavLink>
@@ -30,9 +33,9 @@ export default function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-20 print:hidden border-b border-slate-200 bg-surface/90 backdrop-blur">
+    <header className="sticky top-0 z-20 print:hidden border-b-2 border-brand-100 bg-surface/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link to="/" className="text-xl font-bold text-brand">{SITE.name}</Link>
+        <Link to="/" className="font-display text-2xl font-bold text-brand"><span aria-hidden="true" className="mr-1.5 inline-block animate-wiggle">🎓</span>{SITE.name}</Link>
         <nav aria-label="Main" className="hidden items-center gap-6 md:flex">{items}</nav>
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
@@ -45,7 +48,7 @@ export default function Navbar() {
           ) : (
             <>
               <NavLink to="/login" className={link}>Log in</NavLink>
-              <Link to="/register" className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">Sign up</Link>
+              <Link to="/register" className="rounded-full bg-brand-600 px-4 py-1.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-700">Sign up</Link>
             </>
           )}
         </div>
