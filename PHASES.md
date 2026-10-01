@@ -63,9 +63,16 @@ count, and a per-course breakdown. Frontend: `/manage/enrollments` (table, statu
 filter, search, summary cards, inline mark-paid/mark-failed buttons). 16 new backend
 tests pass (126 total); frontend build green.
 
-## Phase 4: Contact messages
-- [ ] Staff endpoint: list contact messages, toggle `is_handled`.
-- [ ] Admin page: inbox-style list with filter (handled / unhandled).
+## Phase 4: Contact messages (done)
+- [x] Staff endpoint: list contact messages, toggle `is_handled`.
+- [x] Admin page: inbox-style list with filter (handled / unhandled).
+
+Read-only `ReadOnlyModelViewSet` at `/api/manage/contact-messages/` (same shape as
+Phase 3's enrollments endpoint: no create/update/delete, messages only get triaged).
+`POST .../mark-handled/` and `.../mark-unhandled/` toggle `is_handled`. Filters:
+`handled` (true/false) and `q` (name, email, message text). Frontend:
+`/manage/contact`, an inbox-style list with a status filter, search and a toggle button
+per message. 9 new backend tests pass (119 total); build green.
 
 ## Phase 5: Staff & student directory
 - [ ] Staff endpoint: list users, search, promote/demote `role` (superadmin only).
