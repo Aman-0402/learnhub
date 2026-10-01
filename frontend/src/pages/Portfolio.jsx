@@ -60,7 +60,7 @@ export default function Portfolio() {
   return (
     <div className="grid gap-16 lg:grid-cols-[22rem_1fr] lg:gap-20">
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <Avatar name={OWNER.name} photo="/image.jpeg" size="h-24 w-24" text="text-3xl" />
+        <Avatar name={OWNER.name} photo="/image.jpeg" size="h-40 w-40" text="text-3xl" />
         <h1 className="mt-6 text-5xl font-semibold leading-none">{OWNER.name}</h1>
         <p className="mt-4 text-lg text-slate-700">AI & Full-Stack Trainer and Full-Stack Developer in Vadodara, Gujarat. 2000+ students trained across leading universities; real-world products shipped in Django, React and Generative AI.</p>
         <div className="mt-6 flex flex-wrap gap-3">
