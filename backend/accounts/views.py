@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .emails import send_password_reset_email
+from .emails import send_password_reset_email, send_welcome_email
 from .models import User
 from .serializers import (
     ChangePasswordSerializer, PasswordResetConfirmSerializer, PasswordResetRequestSerializer,
@@ -24,6 +24,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        send_welcome_email(user)
         refresh = RefreshToken.for_user(user)
         return Response(
             {

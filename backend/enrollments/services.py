@@ -1,5 +1,6 @@
 from django.utils import timezone
 
+from .emails import send_receipt_email
 from .models import Enrollment
 
 
@@ -11,6 +12,7 @@ def mark_paid(enrollment, payment_ref):
     enrollment.payment_ref = payment_ref
     enrollment.paid_at = timezone.now()
     enrollment.save(update_fields=["status", "payment_ref", "paid_at"])
+    send_receipt_email(enrollment)  # only reached on the first payment, so retries never send a second receipt
     return enrollment
 
 

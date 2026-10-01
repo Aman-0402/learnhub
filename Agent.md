@@ -95,6 +95,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Page width: use the `.shell` class (index.css) for any full-width container; do not hard-code `max-w-6xl`. Max width is 1450px.
 - SEO: set `VITE_SITE_URL` when building the frontend (canonical links, og tags and robots.txt use it) and `SITE_URL` or `FRONTEND_URL` on the backend (sitemap.xml). Both default to placeholders. The production web server must serve `/sitemap.xml` from the backend (the dev server proxies it). Pass `{ noindex: true }` to `useTitle` on any private page. The app is client-side rendered, so Google sees content only after running JavaScript; prerendering or server rendering the course pages would be the next SEO step. Search Console verification needs the live domain and the owner's Google account.
 - HTTPS: set `FORCE_HTTPS=1` in production behind a proxy that sends `X-Forwarded-Proto`; off by default for local work.
+- Emails: build them with `email_layout` and send with `send_email` (both in `accounts/emails.py`); `send_email` swallows and logs errors on purpose. Receipts are sent only when `mark_paid` makes the first change to paid. No email is sent for failed payments.
 - Stretched card links: interactive controls on a `CourseCard` (heart, compare checkbox) need `relative z-10` or the title link's overlay covers them.
 - Admin login is by email (`USER_NAME_FIELD=email`). Create the admin with `python manage.py createsuperuser`; credentials are never committed.
 
@@ -113,6 +114,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Added the `/portfolio` page (About me, roles, skills, projects, contact), linked from the navbar and footer. Owner details live in `OWNER` in `frontend/src/lib/site.js`. axe-core 0 violations in light and dark, no horizontal scroll at 390px. |
 | 2026-10-01 | Layout: content width capped at 1450px through one `.shell` class (navbar, main, footer, compare bar) with side padding that grows with the screen; course grids go to 4 columns from 1280px; navbar switches to the mobile menu below 1024px (it overflowed at tablet widths). Checked at 360, 768, 1024, 1366, 1440, 1920 and 2560px: no horizontal scroll; axe-core clean at 360 and 1920. |
 | 2026-10-01 | SEO pass: `useTitle(title, opts)` now sets title, meta description, canonical (query strings ignored), Open Graph and Twitter tags, robots (noindex on private, login, compare, saved and 404 pages) and JSON-LD (Organization + WebSite on Home, Course on course pages, Person on instructor and portfolio pages). Added share image `public/og-image.png`, `robots.txt` (built from `frontend/robots.txt.template`), dynamic `/sitemap.xml` from the database (backend, tested), and `FORCE_HTTPS` settings (redirect, HSTS, secure cookies). Browser checks on 8 public and 11 private pages, a 23-page link crawl (0 broken), LCP about 1.3s and CLS under 0.02 locally. 58 backend tests pass. |
+| 2026-10-01 | Emails: welcome email on registration and payment receipt email on the first successful payment (HTML + plain text, shared layout in `accounts/emails.py`, receipt in `enrollments/emails.py`, sent from `services.mark_paid` so webhook retries never send twice). Sending never raises, so a mail outage cannot break signup or payment. 9 new tests (67 total pass on MariaDB); real flow checked end to end with console emails. |
 
 ## Status
 
@@ -122,6 +124,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - Course catalog with subject / format / search filters
 - Instructors (list and profile pages), lessons, schedule
 - Enrollment and checkout with seat limits (mock payment), payment history
+- Welcome and payment receipt emails (console in dev, SMTP when configured)
 - Playful redesign: course discovery (filters, compare, saved), student dashboard (next class, progress, calendar)
 - Contact form stored in the database (view it in Django admin)
 - Django admin for all models
@@ -134,13 +137,11 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 
 **Next (pick in this order unless told otherwise)**
 1. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
-2. Email: welcome email and payment receipt email (the email plumbing and settings exist; password reset already uses them)
-3. Batches and timetable for offline and online classes
-4. Course images and instructor photos (file uploads)
-5. Production setup: Gunicorn, environment variables, static files, deployment
+2. Course images and instructor photos (file uploads)
+3. Production setup: Gunicorn, environment variables, static files, deployment
 
 **Known gaps**
-- Emails are only printed to the console until SMTP is configured in `.env`
+- Emails (reset, welcome, receipt) are only printed to the console until SMTP is configured in `.env`
 - No refunds or cancellations
 - Razorpay integration is untested against the live API
 - Real course thumbnails and instructor photos need an upload field on the backend (frontend is ready)
