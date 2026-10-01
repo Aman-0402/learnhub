@@ -31,9 +31,9 @@ const PROJECTS = [
 ];
 
 const EDUCATION = [
-  ["B.Tech, Computer Science & Engineering", "Sambalpur University Institute of Information Technology, Odisha", "CGPA 7.86 / 10"],
-  ["Class XII, CBSE", "Guru Gobind Singh Public School, Bokaro Steel City", "76%"],
-  ["Class X, CBSE", "Guru Gobind Singh Public School, Bokaro Steel City", "CGPA 10 / 10"],
+  ["B.Tech, Computer Science & Engineering", "Sambalpur University Institute of Information Technology, Odisha"],
+  ["Class XII, CBSE", "Guru Gobind Singh Public School, Bokaro Steel City"],
+  ["Class X, CBSE", "Guru Gobind Singh Public School, Bokaro Steel City"],
 ];
 
 const CERTIFICATIONS = [
@@ -74,7 +74,7 @@ export default function Portfolio() {
       <div className="min-w-0 space-y-20">
         <section aria-labelledby="about">
           <H id="about">About me</H>
-          <p className="max-w-2xl text-lg text-slate-700">I am from Bokaro Steel City and now based in Vadodara. I hold a B.Tech in Computer Science and Engineering from Sambalpur University Institute of Information Technology (CGPA 7.86). Over 3 years of combined industry and training experience: designing full-stack, AI/ML and cloud curricula for 2000+ students at leading universities, backed by real-world development across MERN, Django and Generative AI systems.</p>
+          <p className="max-w-2xl text-lg text-slate-700">I am from Bokaro Steel City and now based in Vadodara. I hold a B.Tech in Computer Science and Engineering from Sambalpur University Institute of Information Technology. Over 3 years of combined industry and training experience: designing full-stack, AI/ML and cloud curricula for 2000+ students at leading universities, backed by real-world development across MERN, Django and Generative AI systems.</p>
         </section>
 
         <section aria-labelledby="work">
@@ -120,13 +120,10 @@ export default function Portfolio() {
         <section aria-labelledby="education">
           <H id="education">Education</H>
           <ul className="border-t border-slate-200">
-            {EDUCATION.map(([degree, school, mark], i) => (
+            {EDUCATION.map(([degree, school], i) => (
               <Reveal as="li" key={degree} delay={i * 70} className="grid gap-2 border-b border-slate-200 py-6 sm:grid-cols-[1fr_2fr] sm:gap-8">
                 <h3 className="text-xl font-semibold">{degree}</h3>
-                <div className="flex flex-wrap items-baseline justify-between gap-2 text-slate-700">
-                  <p>{school}</p>
-                  <p className="num text-sm text-slate-600">{mark}</p>
-                </div>
+                <p className="text-slate-700">{school}</p>
               </Reveal>
             ))}
           </ul>
