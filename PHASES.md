@@ -45,11 +45,23 @@ Mounted at `/api/manage/{subjects,instructors,courses,batches,lessons}/` (code i
 
 Routes: `/manage/courses`, `/manage/courses/new`, `/manage/courses/:id` (batches and lessons panels appear once the course exists), `/manage/subjects`, `/manage/instructors`. Code: `lib/manage.js` (API wrapper, `fieldErrors`, plain `check` helpers), `components/admin/Kit.jsx` (FormField, Toggle, native `<dialog>` Dialog and ConfirmDialog), `pages/admin/`. Forms check the same rules as the backend first (required fields, fee not negative, location for offline and hybrid, seats not below paid, end time after start time, at least one batch day) and show any server error under the matching field. Deleting protected items shows the 409 advice in the confirm dialog.
 
-## Phase 3: Enrollments & payments dashboard
-- [ ] Staff endpoint: list/filter enrollments (by status, course, date range).
-- [ ] Manual status actions: mark paid / mark failed (uses existing `mark_paid` /
+## Phase 3: Enrollments & payments dashboard (done)
+- [x] Staff endpoint: list/filter enrollments (by status, course, date range).
+- [x] Manual status actions: mark paid / mark failed (uses existing `mark_paid` /
       `mark_failed` service functions, so emails and idempotency stay correct).
-- [ ] Revenue summary (total paid, this month, by course).
+- [x] Revenue summary (total paid, this month, by course).
+
+Read-only `ModelViewSet` (`ReadOnlyModelViewSet`) at `/api/manage/enrollments/` — no
+create/update/delete, since enrollments come from the checkout flow; status changes go
+through `POST .../mark-paid/` and `POST .../mark-failed/` (`enrollments/manage.py`),
+which call the existing `services.mark_paid` / `mark_failed` so receipts stay single-send
+and a paid enrollment can never be downgraded. `mark-paid` takes an optional
+`payment_ref`; without one it records `manual-<staff email>`. Filters: `status`,
+`course`, `q` (student name/email, course title, payment ref), `start`/`end` on
+`created_at` date. `GET .../summary/` returns total paid, this month's paid, pending
+count, and a per-course breakdown. Frontend: `/manage/enrollments` (table, status
+filter, search, summary cards, inline mark-paid/mark-failed buttons). 16 new backend
+tests pass (126 total); frontend build green.
 
 ## Phase 4: Contact messages
 - [ ] Staff endpoint: list contact messages, toggle `is_handled`.

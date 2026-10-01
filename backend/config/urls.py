@@ -8,6 +8,7 @@ urlpatterns = [
     path("sitemap.xml", sitemap_xml),
     path("api/auth/", include("accounts.urls")),
     path("api/manage/", include("courses.manage_urls")),
+    path("api/manage/", include("enrollments.manage_urls")),
     path("api/", include("courses.urls")),
     path("api/", include("enrollments.urls")),
     path("api/", include("contact.urls")),
