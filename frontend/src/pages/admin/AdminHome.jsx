@@ -1,12 +1,61 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "../../lib/auth.jsx";
-import PageHeader from "../../components/PageHeader.jsx";
+import { useFetch, useTitle } from "../../lib/hooks.js";
+import { manage } from "../../lib/manage.js";
+import { inr } from "../../components/CourseCard.jsx";
+import PageHeader, { Card } from "../../components/PageHeader.jsx";
+import { ErrorState } from "../../components/States.jsx";
+
+const dateStr = (d) => new Date(d).toLocaleDateString("en-IN", { dateStyle: "medium" });
+
+function Stat({ label, value, to }) {
+  const body = <><p className="text-sm text-slate-600">{label}</p><p className="num mt-1 text-3xl font-semibold">{value}</p></>;
+  return to ? <Link to={to} className="card block p-6 transition-colors duration-200 hover-fine:border-slate-400">{body}</Link> : <Card>{body}</Card>;
+}
 
 export default function AdminHome() {
   const { user } = useAuth();
+  useTitle("Admin overview", { noindex: true });
+  const { data, error, loading, reload } = useFetch(() => manage.overview());
+
   return (
     <div>
-      <PageHeader title="Admin" subtitle={`Signed in as ${user.email}. Management pages appear here as they are built.`} />
-      <p className="max-w-xl text-slate-600">Courses, enrollments, messages and users will be added one phase at a time. Until then, Django admin at /admin on the API server still manages everything.</p>
+      <PageHeader title="Overview" subtitle={`Signed in as ${user.email}.`} />
+      {loading && <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="card h-24 animate-pulse p-6" />)}</div>}
+      {error && <ErrorState message={error} onRetry={reload} />}
+      {data && (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Stat label="Students" value={data.students_count} to="/manage/users" />
+            <Stat label="Active courses" value={data.active_courses} to="/manage/courses" />
+            <Stat label="Pending enrollments" value={data.pending_enrollments} to="/manage/enrollments" />
+            <Stat label="Revenue this month" value={inr(data.revenue_this_month)} to="/manage/enrollments" />
+          </div>
+          <div className="mt-10">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <h2 className="text-2xl font-semibold">Recent contact messages</h2>
+              <Link to="/manage/contact" className="link-draw font-semibold text-brand-strong">View all{data.unhandled_messages > 0 && ` (${data.unhandled_messages} unhandled)`}</Link>
+            </div>
+            {data.recent_messages.length === 0
+              ? <p className="text-slate-600">No messages yet.</p>
+              : (
+                <Card className="!p-0">
+                  <ul className="divide-y divide-slate-200">
+                    {data.recent_messages.map((m) => (
+                      <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+                        <div className="min-w-0">
+                          <p className="font-medium">{m.name} <span className="font-normal text-slate-600">{m.email}</span></p>
+                          <p className="text-xs text-slate-600">{dateStr(m.created_at)}</p>
+                        </div>
+                        <span className="tag">{m.is_handled ? "Handled" : "Unhandled"}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

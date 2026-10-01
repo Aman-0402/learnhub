@@ -3,10 +3,13 @@ from django.urls import include, path
 
 from courses.sitemap import sitemap_xml
 
+from .manage_overview import OverviewView
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("sitemap.xml", sitemap_xml),
     path("api/auth/", include("accounts.urls")),
+    path("api/manage/overview/", OverviewView.as_view()),
     path("api/manage/", include("accounts.manage_urls")),
     path("api/manage/", include("courses.manage_urls")),
     path("api/manage/", include("enrollments.manage_urls")),

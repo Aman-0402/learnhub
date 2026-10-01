@@ -26,6 +26,7 @@ export const manage = {
   remove: (res, id) => api(`/manage/${res}/${id}/`, { method: "DELETE" }),
   action: (res, id, action, body) => api(`/manage/${res}/${id}/${action}/`, { method: "POST", body }),
   summary: (res) => api(`/manage/${res}/summary/`),
+  overview: () => api("/manage/overview/"),
 };
 
 /** Turns a DRF error body into `{ field: "message" }`; anything not tied to a field goes under `_form`. */

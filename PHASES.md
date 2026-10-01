@@ -89,10 +89,19 @@ themselves out of the directory. Frontend: `/manage/users`, a table with a role 
 search and an inline role `<select>` (super admins only; everyone else sees the role as
 a read-only badge). 14 new backend tests pass (133 total); build green.
 
-## Phase 6: Dashboard home
-- [ ] Overview page: students count, active courses, pending enrollments, revenue
+## Phase 6: Dashboard home (done)
+- [x] Overview page: students count, active courses, pending enrollments, revenue
       this month, recent contact messages — pulling from endpoints built in earlier
       phases (no new backend logic beyond simple aggregation endpoints).
+
+One aggregation endpoint, `GET /api/manage/overview/` (`config/manage_overview.py`,
+`IsStaffRole`), queries across `accounts`, `courses`, `enrollments` and `contact`
+directly rather than composing the other manage endpoints, so the dashboard home is one
+request instead of five. It lives in `config/` rather than any one app, since it
+legitimately spans all of them. Frontend: `/manage` (now the real overview instead of a
+placeholder) shows four stat tiles (students, active courses, pending enrollments,
+revenue this month), each linking to its detail page, plus the 5 most recent contact
+messages with an unhandled count. 3 new backend tests pass (136 total); build green.
 
 ## Phase 7: Polish and audit
 - [ ] Full permission audit across every new endpoint.
