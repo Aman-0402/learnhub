@@ -52,7 +52,23 @@ funneling through the 4 instructors `seed_demo` already creates.
 | 9 | Kavya Pillai | `kavya.pillai@learnhub.test` | Digital Marketing | Digital Marketing Masterclass |
 | 10 | Aditya Joshi | `aditya.joshi@learnhub.test` | Competitive Programming Coach | Competitive Programming and DSA |
 
-## Admin / staff
+## Staff (5)
+
+All staff share one password: **`Staff@123`**. They have `role=staff` (not
+`superadmin`), so they can use every `/manage` page except the role picker on
+`/manage/users` (promote/demote is super admin only).
+
+| # | Name | Email |
+|---|---|---|
+| 1 | Meera Joshi | `meera.joshi@staff.learnhub.test` |
+| 2 | Sanjay Kulkarni | `sanjay.kulkarni@staff.learnhub.test` |
+| 3 | Tara Bhatt | `tara.bhatt@staff.learnhub.test` |
+| 4 | Nikhil Chawla | `nikhil.chawla@staff.learnhub.test` |
+| 5 | Ritu Saxena | `ritu.saxena@staff.learnhub.test` |
+
+Log in at `/login` with any email above and `Staff@123`, then open `/manage`.
+
+## Super admin
 
 Not created by `seed_people` — created separately with
 `python manage.py createsuperuser`. The current super admin:

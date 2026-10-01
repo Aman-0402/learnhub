@@ -12,11 +12,14 @@ from enrollments.services import mark_failed, mark_paid
 from .seed_demo import LESSONS
 
 PASSWORD = "Student@123"
+STAFF_PASSWORD = "Staff@123"
 
 STUDENTS = [
     "Aarav Shah", "Ishita Patel", "Rohan Gupta", "Sneha Reddy", "Karan Malhotra",
     "Pooja Nair", "Yash Agarwal", "Riya Singh", "Dev Patel", "Anjali Verma",
 ]
+
+STAFF = ["Meera Joshi", "Sanjay Kulkarni", "Tara Bhatt", "Nikhil Chawla", "Ritu Saxena"]
 
 # (name, headline, bio, subject, course title, mode, fee, weeks, location)
 INSTRUCTORS = [
@@ -51,9 +54,9 @@ def slugify_email(name, domain):
 
 
 class Command(BaseCommand):
-    help = ("Create 10 demo students (with enrollments) and 10 demo instructors (each with "
-            "their own course), so the admin dashboard, catalog and instructor pages look "
-            "like a live site. Run seed_demo first.")
+    help = ("Create 10 demo students (with enrollments), 10 demo instructors (each with their "
+            "own course) and 5 demo staff accounts, so the admin dashboard, catalog and "
+            "instructor pages look like a live site. Run seed_demo first.")
 
     def handle(self, *args, **opts):
         if not Course.objects.exists():
@@ -126,7 +129,18 @@ class Command(BaseCommand):
                     mark_failed(enrollment)
                 # "pending" needs no change: that is the default status.
 
+        staff_created = 0
+        for name in STAFF:
+            email = slugify_email(name, "staff.learnhub.test")
+            staff, created = User.objects.get_or_create(email=email, defaults={"full_name": name})
+            if created:
+                staff.set_password(STAFF_PASSWORD)
+                staff.role = User.Role.STAFF
+                staff.save()
+            staff_created += created
+
         self.stdout.write(self.style.SUCCESS(
             f"Seeded {courses_created} new course(s), {students_created} new student(s), "
-            f"{enrollments_created} new enrollment(s), 10 instructors. All student passwords: {PASSWORD}"
+            f"{enrollments_created} new enrollment(s), 10 instructors, {staff_created} new staff. "
+            f"Student password: {PASSWORD} | Staff password: {STAFF_PASSWORD}"
         ))
