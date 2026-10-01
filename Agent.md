@@ -123,6 +123,8 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Emails: welcome email on registration and payment receipt email on the first successful payment (HTML + plain text, shared layout in `accounts/emails.py`, receipt in `enrollments/emails.py`, sent from `services.mark_paid` so webhook retries never send twice). Sending never raises, so a mail outage cannot break signup or payment. 9 new tests (67 total pass on MariaDB); real flow checked end to end with console emails. |
 | 2026-10-01 | Redesign to stop reading as AI-made, using `web-dev-skills/design-taste` (look chosen by the owner: ink and emerald). New tokens (oklch, one accent, light and dark), self-hosted Geist and Bricolage Grotesque, Phosphor icons, Motion library. Removed the purple/coral gradients, floating shapes, emoji, confetti, stat tiles, three-equal-card grids and Google Fonts. Home rebuilt (asymmetric hero with a live course preview, typographic subject rows, one large plus two small featured courses, scroll-linked steps), ruled-list layouts for About, FAQ, Instructors and Portfolio, typographic course covers, animated filters, nav underline, compare bar and enrollment check. Route-level code splitting, FAQPage schema, new share image. Pre-flight 0 violations; axe 0 violations on public pages (light, dark, 390px) and student pages; 67 backend tests pass. |
 | 2026-10-01 | Image generation attempted and paused by the owner. Higgsfield has 0 credits (free plan); Canva generates images but only returns 199px previews to the workspace, so nothing usable was saved. No code changed. Covers stay typographic and avatars stay monograms. To resume: add Higgsfield credits (nano_banana is the budget model) or export full-size images from Canva, then add an image upload field on the backend and serve `image_url` / `photo_url`. Use real photos for instructors, not generated people. |
+| 2026-10-01 | Portfolio content refreshed from the owner's latest resume (all 6 roles, full skill groups, 4 real shipped projects with live/GitHub links, education, certifications), real photo added (replacing the monogram avatar), marks/CGPA removed from education for privacy, Achievements section added (students trained, years experience, certifications, platforms shipped, tests written) styled to match the ink/emerald system rather than generic badge icons, and hero polish (stagger entrance motion, location tag, accent ring on the avatar). Local dev environment set up (Python venv, MySQL migrate + seed, both dev servers running). A superuser (`learnhubadmin@learnhub.com`) was created for Django admin access at `/admin` — the frontend has no separate admin dashboard yet. |
+| 2026-10-01 | Wrote `PHASES.md`: a phased plan for a proper in-frontend admin dashboard (today only Django admin at `/admin` exists; the React app has zero staff-only pages or API endpoints, and `User` has no `role` field). Phases: 0 foundations (role field, RequireStaff guard, admin shell), 1 staff-only DRF API, 2 courses/subjects/instructors UI, 3 enrollments & payments dashboard, 4 contact inbox, 5 staff/student directory, 6 dashboard home, 7 polish and audit. Each phase needs the owner's approval before work starts. |
 
 ## Status
 
@@ -144,9 +146,10 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-1. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
-2. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
-3. Production setup: Gunicorn, environment variables, static files, deployment
+1. Admin dashboard, built phase by phase from `PHASES.md` — each phase needs the owner's approval before it starts.
+2. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
+3. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
+4. Production setup: Gunicorn, environment variables, static files, deployment
 
 **Known gaps**
 - Emails (reset, welcome, receipt) are only printed to the console until SMTP is configured in `.env`
