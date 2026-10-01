@@ -18,15 +18,17 @@ and both files are committed and pushed together.
 
 ---
 
-## Phase 0: Foundations
-- [ ] Add `role` field to `accounts.User` (`student` / `staff` / `superadmin`, default
+## Phase 0: Foundations (done)
+- [x] Add `role` field to `accounts.User` (`student` / `staff` / `superadmin`, default
       `student`) — migration, no data loss. Keep `is_staff`/`is_superuser` as Django's
       own flags for `/admin/`; `role` drives the frontend.
-- [ ] Backfill: existing superusers get `role=superadmin`.
-- [ ] `GET/PATCH /api/auth/me/` returns `role`.
-- [ ] Frontend: `RequireStaff` route guard (mirrors `RequireAuth`, checks `role`).
-- [ ] Frontend: `/admin` layout shell — sidebar nav, empty landing page, linked only
+- [x] Backfill: existing superusers get `role=superadmin`.
+- [x] `GET/PATCH /api/auth/me/` returns `role`.
+- [x] Frontend: `RequireStaff` route guard (mirrors `RequireAuth`, checks `role`).
+- [x] Frontend: `/manage` layout shell (not `/admin`: that path belongs to Django admin on the same domain in production) — sidebar nav, empty landing page, linked only
       for staff/superadmin users (no link shown to students).
+
+Role and flags stay in sync in `User.save()`: if `role` is changed in code it wins and `is_staff` / `is_superuser` follow; otherwise the flags win (so `createsuperuser` and the Django admin checkboxes still set the right role). `role` is read-only on `/api/auth/me/`.
 
 ## Phase 1: Admin API layer
 - [ ] Staff-only DRF endpoints for `Course`, `Subject`, `Instructor`, `Batch`, `Lesson`:
@@ -68,4 +70,4 @@ and both files are committed and pushed together.
 
 Each phase is independent and shippable; later phases can be reordered or dropped
 without breaking earlier ones. Nothing here touches the existing student-facing app
-except adding the `role` field and the new `/admin` route tree.
+except adding the `role` field and the new `/manage` route tree.

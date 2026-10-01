@@ -28,8 +28,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "email", "full_name", "phone")
-        read_only_fields = ("id", "email")
+        fields = ("id", "email", "full_name", "phone", "role")
+        read_only_fields = ("id", "email", "role")
 
 
 class ChangePasswordSerializer(serializers.Serializer):

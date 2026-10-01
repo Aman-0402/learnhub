@@ -41,15 +41,15 @@ const EDUCATION = [
 ];
 
 const CERTIFICATIONS = [
-  "AWS Certified Data Engineer — Amazon Web Services",
-  "Python for Data Science — IBM",
-  "Statistics for Data Science — IBM",
-  "HTML, CSS & JavaScript — Pearson",
-  "Machine Learning with Python A-Z — Udemy",
-  "AI Essentials: Introduction to Artificial Intelligence — Udemy",
-  "AWS Essentials: A Complete Beginner's Guide — Udemy",
-  "JavaScript Programming: From Novice to Expert — Udemy",
-  "Information Security Fundamentals — Udemy",
+  "AWS Certified Data Engineer, Amazon Web Services",
+  "Python for Data Science, IBM",
+  "Statistics for Data Science, IBM",
+  "HTML, CSS & JavaScript, Pearson",
+  "Machine Learning with Python A-Z, Udemy",
+  "AI Essentials: Introduction to Artificial Intelligence, Udemy",
+  "AWS Essentials: A Complete Beginner's Guide, Udemy",
+  "JavaScript Programming: From Novice to Expert, Udemy",
+  "Information Security Fundamentals, Udemy",
   "Oracle Agentic AI Certified",
 ];
 

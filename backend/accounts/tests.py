@@ -119,3 +119,50 @@ class PasswordResetTests(APITestCase):
 
     def test_invalid_email_format_is_a_validation_error(self):
         self.assertEqual(self.request("not-an-email").status_code, 400)
+
+
+class RoleTests(APITestCase):
+    def test_new_users_are_students(self):
+        u = User.objects.create_user("s@example.com", "Pass-12345", full_name="S")
+        self.assertEqual((u.role, u.is_staff, u.is_superuser), ("student", False, False))
+
+    def test_createsuperuser_gets_superadmin_role(self):
+        u = User.objects.create_superuser("root@example.com", "Pass-12345", full_name="R")
+        self.assertEqual((u.role, u.is_staff, u.is_superuser), ("superadmin", True, True))
+
+    def test_flags_set_in_django_admin_set_the_role(self):
+        u = User.objects.create_user("s@example.com", "Pass-12345", full_name="S")
+        u.is_staff = True
+        u.save()
+        self.assertEqual(u.role, "staff")
+        u.is_superuser = True
+        u.save()
+        self.assertEqual(u.role, "superadmin")
+
+    def test_changing_role_updates_flags_both_ways(self):
+        u = User.objects.create_user("s@example.com", "Pass-12345", full_name="S")
+        u.role = "superadmin"
+        u.save()
+        self.assertEqual((u.is_staff, u.is_superuser), (True, True))
+        u.role = "staff"
+        u.save()
+        self.assertEqual((u.is_staff, u.is_superuser), (True, False))
+        u.role = "student"
+        u.save()
+        self.assertEqual((u.is_staff, u.is_superuser), (False, False))
+        self.assertEqual(User.objects.get(pk=u.pk).role, "student")
+
+    def test_demoting_a_superuser_by_role_is_not_undone_by_stale_flags(self):
+        u = User.objects.create_superuser("root@example.com", "Pass-12345", full_name="R")
+        fresh = User.objects.get(pk=u.pk)
+        fresh.role = "student"
+        fresh.save()
+        self.assertEqual((fresh.role, fresh.is_staff, fresh.is_superuser), ("student", False, False))
+
+    def test_me_returns_role_and_cannot_change_it(self):
+        u = User.objects.create_user("s@example.com", "Pass-12345", full_name="S")
+        self.client.force_authenticate(u)
+        self.assertEqual(self.client.get("/api/auth/me/").data["role"], "student")
+        self.client.patch("/api/auth/me/", {"role": "superadmin", "full_name": "S2"})
+        u.refresh_from_db()
+        self.assertEqual((u.role, u.full_name), ("student", "S2"))

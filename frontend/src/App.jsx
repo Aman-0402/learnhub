@@ -3,6 +3,7 @@ import { Link, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import RequireStaff from "./components/RequireStaff.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Home from "./pages/Home.jsx";
 const Courses = lazy(() => import("./pages/Courses.jsx"));
@@ -24,6 +25,8 @@ const Payments = lazy(() => import("./pages/Payments.jsx"));
 const Receipt = lazy(() => import("./pages/Receipt.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
 const Portfolio = lazy(() => import("./pages/Portfolio.jsx"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout.jsx"));
+const AdminHome = lazy(() => import("./pages/admin/AdminHome.jsx"));
 const Saved = lazy(() => import("./pages/Saved.jsx"));
 const Compare = lazy(() => import("./pages/Compare.jsx"));
 import { useTitle } from "./lib/hooks.js";
@@ -68,6 +71,9 @@ export default function App() {
           <Route path="/payments" element={guard(<Payments />)} />
           <Route path="/receipts/:reference" element={guard(<Receipt />)} />
           <Route path="/profile" element={guard(<Profile />)} />
+          <Route path="/manage" element={<RequireStaff><AdminLayout /></RequireStaff>}>
+            <Route index element={<AdminHome />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>

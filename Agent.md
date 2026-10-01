@@ -44,7 +44,7 @@ cd frontend && npm install && npm run dev   # site on :5173, proxies /api to :80
 
 ## Data model
 
-- `accounts.User`: email login, full_name, phone
+- `accounts.User`: email login, full_name, phone, `role` (student / staff / superadmin). `role` drives the frontend admin area; `save()` keeps it in step with Django's `is_staff` / `is_superuser` (a role change in code wins, otherwise the flags win). `role` is read-only on `/api/auth/me/`
 - `courses.Subject`, `courses.Instructor`, `courses.Course` (mode: online / offline / hybrid, fee, seats, start_date, location), `courses.Batch` (weekly slot: days, times, optional own start date / format / seats), `courses.Lesson` (video / reading / live / assignment)
 - `enrollments.Enrollment`: student + course + batch, status pending / paid / failed, payment_ref
 - `contact.ContactMessage`: messages from the contact form (rate limited to 5 per hour per visitor)
@@ -103,6 +103,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 - HTTPS: set `FORCE_HTTPS=1` in production behind a proxy that sends `X-Forwarded-Proto`; off by default for local work.
 - Emails: build them with `email_layout` and send with `send_email` (both in `accounts/emails.py`); `send_email` swallows and logs errors on purpose. Receipts are sent only when `mark_paid` makes the first change to paid. No email is sent for failed payments.
 - Stretched card links: interactive controls on a `CourseCard` (heart, compare checkbox) need `relative z-10` or the title link's overlay covers them.
+- Frontend admin area lives at `/manage` (guard: `RequireStaff`, layout: `pages/admin/AdminLayout.jsx`; each phase of `PHASES.md` adds its links to `LINKS`). It is not `/admin`, which is Django admin on the API server. The navbar shows an Admin link only to staff and super admins; students who open `/manage` are sent to their dashboard.
 - Admin login is by email (`USER_NAME_FIELD=email`). Create the admin with `python manage.py createsuperuser`; credentials are never committed.
 
 ## Progress log
@@ -125,6 +126,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 | 2026-10-01 | Image generation attempted and paused by the owner. Higgsfield has 0 credits (free plan); Canva generates images but only returns 199px previews to the workspace, so nothing usable was saved. No code changed. Covers stay typographic and avatars stay monograms. To resume: add Higgsfield credits (nano_banana is the budget model) or export full-size images from Canva, then add an image upload field on the backend and serve `image_url` / `photo_url`. Use real photos for instructors, not generated people. |
 | 2026-10-01 | Portfolio content refreshed from the owner's latest resume (all 6 roles, full skill groups, 4 real shipped projects with live/GitHub links, education, certifications), real photo added (replacing the monogram avatar), marks/CGPA removed from education for privacy, Achievements section added (students trained, years experience, certifications, platforms shipped, tests written) styled to match the ink/emerald system rather than generic badge icons, and hero polish (stagger entrance motion, location tag, accent ring on the avatar). Local dev environment set up (Python venv, MySQL migrate + seed, both dev servers running). A superuser (`learnhubadmin@learnhub.com`) was created for Django admin access at `/admin` — the frontend has no separate admin dashboard yet. |
 | 2026-10-01 | Wrote `PHASES.md`: a phased plan for a proper in-frontend admin dashboard (today only Django admin at `/admin` exists; the React app has zero staff-only pages or API endpoints, and `User` has no `role` field). Phases: 0 foundations (role field, RequireStaff guard, admin shell), 1 staff-only DRF API, 2 courses/subjects/instructors UI, 3 enrollments & payments dashboard, 4 contact inbox, 5 staff/student directory, 6 dashboard home, 7 polish and audit. Each phase needs the owner's approval before work starts. |
+| 2026-10-01 | Admin dashboard Phase 0 (approved by the owner): `User.role` with migration and backfill (existing superuser became `superadmin`), role and Django flags kept in sync in `save()`, `role` returned by `/api/auth/me/` (read-only), `RequireStaff` guard and `/manage` admin shell with sidebar and a navbar link shown only to staff. Frontend path is `/manage` because `/admin` is Django admin. Also replaced em dashes in the owner's portfolio certificate list. 73 backend tests pass (6 new); build, pre-flight 0 violations; staff, student and anonymous access and axe (light, dark) checked in a browser. |
 
 ## Status
 
@@ -146,7 +148,7 @@ The receipt page uses `/api/my-courses/` and needs no new endpoint.
 4. Make one test payment with Razorpay test cards, confirm the enrollment turns paid, then switch to live keys.
 
 **Next (pick in this order unless told otherwise)**
-1. Admin dashboard, built phase by phase from `PHASES.md` — each phase needs the owner's approval before it starts.
+1. Admin dashboard, built phase by phase from `PHASES.md` (Phase 0 done; Phase 1, the staff-only API, is next). Each phase needs the owner's approval before it starts.
 2. Test Razorpay end to end with real test keys, then handle refunds and last-seat races
 3. Course images and instructor photos: backend upload fields, then full-size course covers (needs Higgsfield credits or Canva exports) and real instructor photos
 4. Production setup: Gunicorn, environment variables, static files, deployment
