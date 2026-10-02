@@ -41,13 +41,14 @@ class CourseSerializer(serializers.ModelSerializer):
     instructor = serializers.SerializerMethodField()
     instructor_slug = serializers.SerializerMethodField()
     seats_left = serializers.SerializerMethodField()
+    lesson_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
         fields = (
             "id", "title", "slug", "subject", "mode", "mode_display", "description",
             "instructor", "instructor_slug", "fee", "duration_weeks", "start_date",
-            "location", "seats", "seats_left",
+            "location", "seats", "seats_left", "lesson_count",
         )
 
     def get_instructor(self, obj):
@@ -61,6 +62,14 @@ class CourseSerializer(serializers.ModelSerializer):
             return None
         taken = obj.enrollments.filter(status="paid").count()
         return max(obj.seats - taken, 0)
+
+    def get_lesson_count(self, obj):
+        # Annotated on the list/detail querysets to avoid a query per row; falls back
+        # to a direct count for the few places that build a Course queryset themselves
+        # (e.g. the per-student enrollments list, which is already a handful of rows).
+        if hasattr(obj, "lesson_count"):
+            return obj.lesson_count
+        return obj.lessons.filter(is_published=True).count()
 
 
 class LessonSerializer(serializers.ModelSerializer):

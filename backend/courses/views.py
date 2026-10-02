@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions
 from rest_framework.response import Response
@@ -22,7 +22,9 @@ class CourseListView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        qs = Course.objects.filter(is_published=True).select_related("subject", "instructor")
+        qs = Course.objects.filter(is_published=True).select_related("subject", "instructor").annotate(
+            lesson_count=Count("lessons", filter=Q(lessons__is_published=True), distinct=True)
+        )
         p = self.request.query_params
         if p.get("subject"):
             qs = qs.filter(subject__slug=p["subject"])
@@ -38,7 +40,9 @@ class CourseListView(generics.ListAPIView):
 
 
 class CourseDetailView(generics.RetrieveAPIView):
-    queryset = Course.objects.filter(is_published=True).select_related("subject", "instructor")
+    queryset = Course.objects.filter(is_published=True).select_related("subject", "instructor").annotate(
+        lesson_count=Count("lessons", filter=Q(lessons__is_published=True), distinct=True)
+    )
     serializer_class = CourseSerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = "slug"

@@ -15,6 +15,28 @@ import { DetailSkeleton, ErrorState } from "../components/States.jsx";
 const TABS = ["Overview", "Timetable", "Lessons"];
 const when = (d) => new Date(d).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
 
+/** Turns a YouTube or Vimeo watch link into its embeddable form, so the lesson link
+ * plays inline like an uploaded video instead of only opening a new tab. Any other
+ * link (a document, a meeting link, an unsupported host) falls back to "Open". */
+function embedUrl(url) {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const id = u.pathname === "/watch" ? u.searchParams.get("v") : u.pathname.startsWith("/live/") ? u.pathname.split("/")[2] : null;
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (host === "youtu.be") return u.pathname.slice(1) ? `https://www.youtube.com/embed/${u.pathname.slice(1)}` : null;
+    if (host === "vimeo.com") {
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      return id && /^\d+$/.test(id) ? `https://player.vimeo.com/video/${id}` : null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default function Learn() {
   const { slug } = useParams();
   const [tab, setTab] = useState("Overview");
@@ -111,18 +133,28 @@ export default function Learn() {
             <Card className="text-center"><p className="font-medium">No lessons yet</p><p className="mt-1 text-sm text-slate-600">Lessons and materials will appear here once your instructor adds them.</p></Card>
           ) : (
             <ol className="space-y-3">
-              {lessons.map((l, i) => (
-                <li key={l.id}><Card className="flex items-start gap-4 !p-4">
-                  <input type="checkbox" aria-label={`Mark "${l.title}" as done`} checked={doneIds.includes(l.id)} onChange={() => prog.toggle(slug, l.id)} className="mt-1 h-5 w-5 shrink-0 accent-brand-600" />
-                  <span aria-hidden="true" className="num flex h-8 w-6 shrink-0 items-center text-sm text-slate-500">{String(i + 1).padStart(2, "0")}</span>
-                  <div className="flex-1">
-                    <p className="font-medium">{l.title}</p>
-                    <p className="text-sm text-slate-600">{l.kind_display}{l.duration_minutes ? `, ${l.duration_minutes} min` : ""}{l.session_at ? `, ${when(l.session_at)}` : ""}</p>
-                    {l.description && <p className="mt-1 text-sm text-slate-600">{l.description}</p>}
+              {lessons.map((l, i) => {
+                const embed = !l.video_url && l.url ? embedUrl(l.url) : null;
+                return (
+                <li key={l.id}><Card className="!p-4">
+                  <div className="flex items-start gap-4">
+                    <input type="checkbox" aria-label={`Mark "${l.title}" as done`} checked={doneIds.includes(l.id)} onChange={() => prog.toggle(slug, l.id)} className="mt-1 h-5 w-5 shrink-0 accent-brand-600" />
+                    <span aria-hidden="true" className="num flex h-8 w-6 shrink-0 items-center text-sm text-slate-500">{String(i + 1).padStart(2, "0")}</span>
+                    <div className="flex-1">
+                      <p className="font-medium">{l.title}</p>
+                      <p className="text-sm text-slate-600">{l.kind_display}{l.duration_minutes ? `, ${l.duration_minutes} min` : ""}{l.session_at ? `, ${when(l.session_at)}` : ""}</p>
+                      {l.description && <p className="mt-1 text-sm text-slate-600">{l.description}</p>}
+                    </div>
+                    {!l.video_url && !embed && l.url && <a href={l.url} target="_blank" rel="noopener noreferrer" className="link-draw shrink-0 text-sm font-semibold text-brand-strong">Open<span className="sr-only"> {l.title} (opens in a new tab)</span></a>}
                   </div>
-                  {l.url && <a href={l.url} target="_blank" rel="noopener noreferrer" className="link-draw shrink-0 text-sm font-semibold text-brand-strong">Open<span className="sr-only"> {l.title} (opens in a new tab)</span></a>}
+                  {l.video_url && <video controls preload="metadata" className="mt-4 w-full rounded-xl bg-slate-900" src={l.video_url}>Your browser cannot play this video.</video>}
+                  {embed && (
+                    <div className="mt-4 aspect-video w-full overflow-hidden rounded-xl bg-slate-900">
+                      <iframe src={embed} title={l.title} className="h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy" />
+                    </div>
+                  )}
                 </Card></li>
-              ))}
+              );})}
             </ol>
           )
         )}

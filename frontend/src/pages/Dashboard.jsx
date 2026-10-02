@@ -10,14 +10,16 @@ import { CourseThumb } from "../components/Media.jsx";
 import PageHeader, { Card } from "../components/PageHeader.jsx";
 import { CardGridSkeleton, ErrorState, Skeleton } from "../components/States.jsx";
 
-function LessonProgress({ slug, prog }) {
-  const { data } = useFetch(() => api(`/courses/${slug}/lessons/`), [slug]);
-  if (!data || data.length === 0) return null;
-  const done = prog.done(slug).filter((id) => data.some((l) => l.id === id)).length;
+// `lesson_count` rides along on the course object already in /my-courses/, so this
+// needs no fetch of its own (one HTTP round trip per enrolled course, every visit, was
+// the previous version's cost).
+function LessonProgress({ slug, total, prog }) {
+  if (!total) return null;
+  const done = Math.min(prog.done(slug).length, total);
   return (
     <div className="mt-3">
-      <p className="mb-1 text-xs text-slate-600"><span className="num">{done} of {data.length}</span> lessons done, saved on this device</p>
-      <ProgressBar value={(done / data.length) * 100} label={`Lesson progress for ${slug}`} />
+      <p className="mb-1 text-xs text-slate-600"><span className="num">{done} of {total}</span> lessons done, saved on this device</p>
+      <ProgressBar value={(done / total) * 100} label={`Lesson progress for ${slug}`} />
     </div>
   );
 }
@@ -83,7 +85,7 @@ export default function Dashboard() {
                   </div>
                   <h3 className="font-semibold">{e.course.title}</h3>
                   <p className="mt-1 text-sm text-slate-600">{e.course.start_date ? `Starts ${fmt(e.course.start_date)}` : "Start date to be announced"}{e.course.location && `, ${e.course.location}`}</p>
-                  <LessonProgress slug={e.course.slug} prog={prog} />
+                  <LessonProgress slug={e.course.slug} total={e.course.lesson_count} prog={prog} />
                   <Link to={`/learn/${e.course.slug}`} className="link-draw mt-4 self-start text-sm font-semibold text-brand-strong">Open course<span className="sr-only"> {e.course.title}</span></Link>
                 </div>
               </div>
