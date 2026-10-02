@@ -43,3 +43,41 @@ class OverviewTests(APITestCase):
         self.assertEqual(Decimal(r.data["revenue_this_month"]), Decimal("200"))
         self.assertEqual(r.data["unhandled_messages"], 1)
         self.assertEqual(len(r.data["recent_messages"]), 2)
+
+    def test_revenue_trend_covers_six_months_current_last(self):
+        self.client.force_authenticate(self.staff)
+        r = self.client.get(BASE)
+        trend = r.data["revenue_trend"]
+        self.assertEqual(len(trend), 6)
+        this_month = trend[-1]
+        self.assertEqual(this_month["month"], timezone.localtime(timezone.now()).strftime("%b %Y"))
+        self.assertEqual(Decimal(this_month["total"]), Decimal("200"))
+        self.assertEqual(this_month["count"], 1)
+        self.assertEqual(trend[0]["total"], 0)  # five months back: no data in the fixture
+
+    def test_top_courses_ranked_by_revenue(self):
+        other = Course.objects.filter(is_published=False).first()
+        other.is_published = True
+        other.save()
+        Enrollment.objects.create(student=self.student, course=other, amount=500, status="paid", paid_at=timezone.now())
+        self.client.force_authenticate(self.staff)
+        r = self.client.get(BASE)
+        top = r.data["top_courses"]
+        self.assertEqual(top[0]["course_title"], "Draft")
+        self.assertEqual(Decimal(top[0]["total"]), Decimal("500"))
+        self.assertEqual(top[1]["course_title"], "Physics")
+
+    def test_low_seats_flags_nearly_full_courses(self):
+        from courses.models import Subject
+        subject = Subject.objects.first()
+        tight = Course.objects.create(title="Tight", subject=subject, description="d", fee=100, is_published=True, seats=2)
+        Enrollment.objects.create(student=self.student, course=tight, amount=100, status="paid", paid_at=timezone.now())
+        roomy = Course.objects.create(title="Roomy", subject=subject, description="d", fee=100, is_published=True, seats=50)
+        self.client.force_authenticate(self.staff)
+        r = self.client.get(BASE)
+        slugs = [row["slug"] for row in r.data["low_seats"]]
+        self.assertIn(tight.slug, slugs)
+        self.assertNotIn(roomy.slug, slugs)
+        self.assertNotIn(self.course.slug, slugs)  # seats is None: unlimited, never "low"
+        row = next(x for x in r.data["low_seats"] if x["slug"] == tight.slug)
+        self.assertEqual(row["seats_left"], 1)
