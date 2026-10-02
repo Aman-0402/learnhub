@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    CourseBatchesView, CourseDetailView, CourseLessonsView, CourseListView,
+    CourseBatchesView, CourseDetailView, CourseLessonsView, CourseListView, CourseSyllabusView,
     InstructorDetailView, InstructorListView, SubjectListView,
 )
 
@@ -12,5 +12,6 @@ urlpatterns = [
     path("courses/", CourseListView.as_view(), name="course-list"),
     path("courses/<slug:slug>/", CourseDetailView.as_view(), name="course-detail"),
     path("courses/<slug:slug>/batches/", CourseBatchesView.as_view(), name="course-batches"),
+    path("courses/<slug:slug>/syllabus/", CourseSyllabusView.as_view(), name="course-syllabus"),
     path("courses/<slug:slug>/lessons/", CourseLessonsView.as_view(), name="course-lessons"),
 ]

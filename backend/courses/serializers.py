@@ -87,6 +87,17 @@ class LessonSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(obj.video.url) if request else obj.video.url
 
 
+class SyllabusLessonSerializer(serializers.ModelSerializer):
+    """Public preview of a lesson: what it covers, not the content itself. No url/video_url
+    here on purpose — those stay behind a paid enrollment (see CourseLessonsView)."""
+
+    kind_display = serializers.CharField(source="get_kind_display", read_only=True)
+
+    class Meta:
+        model = Lesson
+        fields = ("id", "title", "kind", "kind_display", "order", "description", "duration_minutes")
+
+
 class BatchSerializer(serializers.ModelSerializer):
     days = serializers.SerializerMethodField()
     start_time = serializers.TimeField(format="%H:%M")

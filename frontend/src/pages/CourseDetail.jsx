@@ -33,6 +33,7 @@ export default function CourseDetail() {
   const wish = useWishlist();
   const recent = useRecent();
   const all = useFetch(() => fetchAllCourses());
+  const syllabus = useFetch(() => api(`/courses/${slug}/syllabus/`, { auth: false }), [slug]);
 
   useEffect(() => { if (course) recent.push(course.slug); }, [course?.slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -63,6 +64,24 @@ export default function CourseDetail() {
           <h1 className="text-4xl font-semibold leading-[1.05] sm:text-6xl">{course.title}</h1>
           <div className="relative mt-8 overflow-hidden rounded-[var(--radius-card)]"><CourseThumb course={course} className="h-28 sm:h-36" label /></div>
           <p className="mt-8 max-w-2xl whitespace-pre-line text-lg text-slate-700">{course.description}</p>
+          {syllabus.data?.length > 0 && (
+            <section aria-labelledby="syllabus" className="mt-12 max-w-2xl">
+              <h2 id="syllabus" className="mb-1 text-2xl font-semibold">Syllabus</h2>
+              <p className="mb-5 text-sm text-slate-600">{syllabus.data.length} lesson{syllabus.data.length === 1 ? "" : "s"}. Enroll to open each one.</p>
+              <ol className="border-t border-slate-200">
+                {syllabus.data.map((l, i) => (
+                  <li key={l.id} className="flex items-start gap-4 border-b border-slate-200 py-4">
+                    <span aria-hidden="true" className="num flex h-8 w-6 shrink-0 items-center text-sm text-slate-500">{String(i + 1).padStart(2, "0")}</span>
+                    <div>
+                      <p className="font-medium">{l.title}</p>
+                      <p className="text-sm text-slate-600">{l.kind_display}{l.duration_minutes ? `, ${l.duration_minutes} min` : ""}</p>
+                      {l.description && <p className="mt-1 text-sm text-slate-600">{l.description}</p>}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
         </div>
         <aside aria-label="Enrollment" className="card h-fit p-6 lg:sticky lg:top-24">
           <div className="flex items-start justify-between gap-3">

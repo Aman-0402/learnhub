@@ -7,7 +7,10 @@ from rest_framework.views import APIView
 from enrollments.models import Enrollment
 
 from .models import Course, Instructor, Subject
-from .serializers import BatchSerializer, CourseSerializer, InstructorSerializer, LessonSerializer, SubjectSerializer
+from .serializers import (
+    BatchSerializer, CourseSerializer, InstructorSerializer, LessonSerializer, SubjectSerializer,
+    SyllabusLessonSerializer,
+)
 
 
 class SubjectListView(generics.ListAPIView):
@@ -80,6 +83,19 @@ class CourseLessonsView(APIView):
             return Response({"detail": "Enroll in this course to access its lessons."}, status=403)
         lessons = course.lessons.filter(is_published=True)
         return Response(LessonSerializer(lessons, many=True, context={"request": request}).data)
+
+
+class CourseSyllabusView(APIView):
+    """Public preview of the lesson outline (title, type, duration, what it covers), not
+    the content itself. Anyone can see what they would get; only a paid student or staff
+    can open a lesson's actual link or video (CourseLessonsView)."""
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, slug):
+        course = get_object_or_404(Course, slug=slug, is_published=True)
+        lessons = course.lessons.filter(is_published=True)
+        return Response(SyllabusLessonSerializer(lessons, many=True).data)
 
 
 class CourseBatchesView(APIView):

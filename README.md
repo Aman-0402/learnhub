@@ -63,6 +63,7 @@ cd backend && DB_ENGINE=sqlite python manage.py test
 | POST | `/api/auth/change-password/` | yes |
 | POST | `/api/auth/password-reset/`, `/api/auth/password-reset/confirm/` | no |
 | GET | `/api/courses/<slug>/batches/` | no |
+| GET | `/api/courses/<slug>/syllabus/` (lesson titles, type, duration, no links or video) | no |
 | GET | `/api/subjects/`, `/api/courses/?subject=&mode=&q=`, `/api/courses/<slug>/` | no |
 | GET | `/api/instructors/`, `/api/instructors/<slug>/` | no |
 | POST | `/api/contact/` (5 per hour per visitor) | no |
